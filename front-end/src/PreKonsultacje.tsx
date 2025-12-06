@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Bill, BillType, BillStatus, Consultation } from './types'
+import { Bill, BillStatus, Consultation } from './types'
 import mPrawoLogo from './assets/mPrawo-logo3.png'
 import Timeline, { exampleTimelineData } from './Timeline'
 
@@ -190,7 +190,7 @@ export const consultations: Consultation[] = [
   { 
     id: 1, 
     type: 'consultation',
-    title: 'Konsultacje ws. Służby Zdrowia', 
+    title: 'Reforma Służby Zdrowia', 
     category: 'Zdrowie', 
     deadline: '20.12.2025',
     description: 'Ministerstwo Zdrowia prowadzi konsultacje publiczne projektu ustawy o reorganizacji służby zdrowia. Projekt zakłada zwiększenie nakładów i skrócenie kolejek.',
@@ -202,7 +202,7 @@ export const consultations: Consultation[] = [
   { 
     id: 2, 
     type: 'consultation',
-    title: 'Konsultacje ws. Programu Mieszkaniowego', 
+    title: 'Program Mieszkaniowy', 
     category: 'Budownictwo', 
     deadline: '25.12.2025',
     description: 'Konsultacje społeczne nowego programu mieszkaniowego „Mieszkanie dla Każdego". Program ma ułatwić młodym Polakom zakup pierwszego mieszkania.',
@@ -214,7 +214,7 @@ export const consultations: Consultation[] = [
   { 
     id: 3, 
     type: 'consultation',
-    title: 'Konsultacje ws. Transportu Miejskiego', 
+    title: 'Transport Miejski', 
     category: 'Transport', 
     deadline: '28.12.2025',
     description: 'Ministerstwo Infrastruktury konsultuje projekt ustawy o rozwoju zeroemisyjnego transportu miejskiego.',
@@ -226,7 +226,7 @@ export const consultations: Consultation[] = [
   { 
     id: 4, 
     type: 'consultation',
-    title: 'Konsultacje ws. Ochrony Klimatu', 
+    title: 'Ochrona Klimatu', 
     category: 'Środowisko', 
     deadline: '30.12.2025',
     description: 'Konsultacje publiczne Narodowego Planu Ochrony Klimatu do 2040 roku. Dokument określa ścieżkę transformacji energetycznej Polski.',
@@ -278,9 +278,9 @@ const getCurrentStageName = (status: BillStatus): string => {
     case 'Złożona':
       return 'Złożona'
     case 'W Sejmie':
-      return 'W Sejmie'
+      return 'Przyjęta w Sejmie'
     case 'W Senacie':
-      return 'W Senacie'
+      return 'Przyjęta w Senacie'
     case 'Podpisana':
       return 'Podpisana'
     case 'Weto Prezydenta':
@@ -326,7 +326,7 @@ const BillTrain = ({ status }: { status: BillStatus }) => {
             </div>
             {/* Arrow connector */}
             {!isLast && (
-              <span className={`text-xs mx-1 ${isCompleted ? 'text-green-400' : 'text-gray-300'}`}>
+              <span className="text-xs mx-1 text-gray-900">
                 →
               </span>
             )}
@@ -338,15 +338,14 @@ const BillTrain = ({ status }: { status: BillStatus }) => {
 }
 
 export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBillClick, onConsultationClick }: LandingPageProps) {
-  const [filterType, setFilterType] = useState<BillType>('ustawa')
   const [searchQuery, setSearchQuery] = useState('')
   const [consultationType, setConsultationType] = useState<'Prekonsultacje' | 'Konsultacje'>('Prekonsultacje')
 
-  // Filter bills based on type and search query
+  // Filter bills (only ustawy) based on search query
   const filteredBills = bills.filter((bill) => {
-    const matchesType = bill.type === filterType
+    const isUstawa = bill.type === 'ustawa'
     const matchesSearch = bill.name.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesType && matchesSearch
+    return isUstawa && matchesSearch
   })
 
   // Handle timeline stage selection
@@ -423,8 +422,8 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
           {/* Tagline - changes based on selection */}
           <p className="text-sm text-gray-600 leading-relaxed mb-4">
             {consultationType === 'Prekonsultacje' 
-              ? 'Współtwórz lepsze prawo — podziel się uwagami do celów, założeń i skutków proponowanych zmian prawnych'
-              : 'Weź udział w konsultacjach publicznych — zgłoś swoje uwagi do projektów ustaw i rozporządzeń'
+              ? 'Współtwórz lepsze prawo - podziel się uwagami do celów, założeń i skutków proponowanych zmian prawnych'
+              : 'Weź udział w konsultacjach publicznych - zgłoś swoje uwagi do projektów ustaw i rozporządzeń'
             }
           </p>
 
@@ -454,48 +453,27 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
       </div>
 
       {/* Main Content */}
-      <main className="py-8 px-4">
+      <main className="pt-4 pb-8 px-4">
       {/* Main Container */}
       <div className="max-w-[1200px] mx-auto bg-gray-100 rounded-3xl shadow-lg p-6 md:p-10">
 
-        {/* Search and Filter Row */}
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
+        {/* Tagline and Search Row */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+          <p className="text-sm text-gray-600 flex-shrink-0">
+            Poznaj przebieg prac legislacyjnych - wybierz ustawę, aby zobaczyć szczegóły.
+          </p>
           {/* Search Input */}
-          <div className="relative flex-1 w-full">
+          <div className="relative w-full sm:w-auto sm:min-w-[320px]">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               🔍
             </span>
             <input
               type="text"
-              placeholder="Szukaj ustawy lub projektu..."
+              placeholder="Szukaj ustawy..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all text-sm"
             />
-          </div>
-          
-          {/* Filter Buttons */}
-          <div className="flex gap-2 flex-shrink-0">
-            <button
-              onClick={() => setFilterType('ustawa')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                filterType === 'ustawa'
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
-              }`}
-            >
-              Ustawy
-            </button>
-            <button
-              onClick={() => setFilterType('projekt')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                filterType === 'projekt'
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
-              }`}
-            >
-              Projekty
-            </button>
           </div>
         </div>
 
