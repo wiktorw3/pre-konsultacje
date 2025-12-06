@@ -30,3 +30,5 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /api-docs
+ai-service:
+  url:

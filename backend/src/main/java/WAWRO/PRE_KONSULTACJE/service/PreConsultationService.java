@@ -7,6 +7,7 @@ import WAWRO.PRE_KONSULTACJE.model.entity.PreConsultation;
 import WAWRO.PRE_KONSULTACJE.model.entity.User;
 import WAWRO.PRE_KONSULTACJE.repository.PreConsultationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +25,11 @@ public class PreConsultationService {
 
     @Transactional
     public PreConsultationDTO createConsultation(PreConsultationCreateDTO createDTO) {
+        PreConsultation savedConsultation = consultationRepository.save(createPreConsultation(createDTO));
+        return consultationMapper.toDto(savedConsultation);
+    }
 
+    private PreConsultation createPreConsultation(PreConsultationCreateDTO createDTO){
         User author = userService.getLoggedUser();
 
         PreConsultation consultation = new PreConsultation();
@@ -33,9 +38,7 @@ public class PreConsultationService {
         consultation.setAuthor(author);
         consultation.setActive(true);
         consultation.setDateCreated(LocalDateTime.now());
-
-        PreConsultation savedConsultation = consultationRepository.save(consultation);
-        return consultationMapper.toDto(savedConsultation);
+        return consultation;
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +49,8 @@ public class PreConsultationService {
 
     @Transactional(readOnly = true)
     public List<PreConsultationDTO> getAllConsultations() {
-        return consultationRepository.findAllByActiveTrue().stream()
+        Sort sortByCommentsCountDesc = Sort.by(Sort.Direction.DESC, "comments");
+        return consultationRepository.findAllByActiveTrue(sortByCommentsCountDesc).stream()
                 .map(consultationMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -57,7 +61,6 @@ public class PreConsultationService {
         consultation.setSubject(updateDTO.subject());
         consultation.setDescription(updateDTO.description());
         consultationRepository.save(consultation);
-
         return consultationMapper.toDto(consultation);
     }
 
