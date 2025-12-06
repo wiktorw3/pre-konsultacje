@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>WAWRO</groupId>
-	<artifactId>PRE-KONSULTACJE</artifactId>
+	<artifactId>pre_konsultacje</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>PRE-KONSULTACJE</name>
 	<description>MVP HackNation</description>
@@ -78,7 +78,12 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.3.0</version> </dependency>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

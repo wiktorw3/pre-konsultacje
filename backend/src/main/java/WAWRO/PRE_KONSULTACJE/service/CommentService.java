@@ -25,7 +25,6 @@ public class CommentService {
     private final PreConsultationRepository preConsultationRepository;
     private final CommentMapper commentMapper;
     private final UserService userService;
-    private final PreConsultationService consultationService;
 
 
     @Transactional
@@ -60,6 +59,7 @@ public class CommentService {
         return commentMapper.toDto(comment);
     }
 
+    @Transactional
     public CommentDTO toggleApprove(Long commentId) {
         User user = userService.getLoggedUser();
         Comment comment = commentRepository.findByIdOrThrow(commentId);
@@ -70,7 +70,7 @@ public class CommentService {
         } else {
             approves.add(user.getId());
         }
-
+        commentRepository.save(comment);
         return commentMapper.toDto(comment);
     }
 }

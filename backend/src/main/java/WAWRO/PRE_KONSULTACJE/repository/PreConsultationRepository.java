@@ -1,10 +1,9 @@
 package WAWRO.PRE_KONSULTACJE.repository;
 
 import WAWRO.PRE_KONSULTACJE.model.entity.PreConsultation;
-import jakarta.validation.ValidationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface PreConsultationRepository extends JpaRepository<PreConsultation, Long> {
@@ -15,5 +14,5 @@ public interface PreConsultationRepository extends JpaRepository<PreConsultation
                 .orElseThrow(() -> new IllegalArgumentException("PreConsultation not found with ID: " + id));
     }
 
-    List<PreConsultation > findAllByActiveTrue();
+    List<PreConsultation> findAllByActiveTrue(Sort sort);
 }
