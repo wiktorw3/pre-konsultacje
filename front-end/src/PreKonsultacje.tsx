@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Bill, BillType, BillStatus, Consultation } from './types'
 import mPrawoLogo from './assets/mPrawo-logo3.png'
+import Timeline, { exampleTimelineData } from './Timeline'
 
 interface LandingPageProps {
   isLoggedIn: boolean
@@ -289,6 +290,11 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
           </div>
         </div>
       </header>
+
+      {/* Timeline Section */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <Timeline data={exampleTimelineData} />
+      </div>
 
       {/* Main Content */}
       <main className="py-8 px-4">

@@ -1,0 +1,719 @@
+/* Timeline Component Styles */
+/* Spełnia wymagania dostępności i responsywności */
+
+:root {
+  --timeline-color-preparing: #9ca3af; /* Szary */
+  --timeline-color-consultations: #3b82f6; /* Niebieski */
+  --timeline-color-passed: #10b981; /* Zielony */
+  --timeline-color-risks: #ef4444; /* Czerwony */
+  
+  /* Kolory dla każdego etapu */
+  --stage-prekonsultacje: #6366f1; /* Indigo */
+  --stage-projekt: #8b5cf6; /* Purple */
+  --stage-konsultacje: #ec4899; /* Pink */
+  --stage-ustawa: #f59e0b; /* Amber */
+  --stage-sejm: #ef4444; /* Red */
+  --stage-senat: #10b981; /* Green */
+  --stage-prezydent: #3b82f6; /* Blue */
+  
+  --timeline-bg-light: #f9fafb;
+  --timeline-border: #e5e7eb;
+  --timeline-text: #111827;
+  --timeline-text-light: #6b7280;
+  
+  --timeline-spacing: 0.75rem;
+  --timeline-stage-size: 2.5rem;
+  --timeline-line-width: 2px;
+}
+
+.timeline-container {
+  position: relative;
+  padding: 3.5rem 1rem 1rem 1rem;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow-x: visible;
+}
+
+@media (min-width: 1400px) {
+  .timeline-container {
+    max-width: 1400px;
+    padding: 3.5rem 2rem 1rem 2rem;
+  }
+}
+
+.timeline-line {
+  position: absolute;
+  top: calc(var(--timeline-stage-size) / 2);
+  left: 1rem;
+  right: 1rem;
+  height: var(--timeline-line-width);
+  background: var(--timeline-border);
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  gap: var(--timeline-spacing);
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  height: 100px;
+  justify-content: center;
+}
+
+/* Strzałka między etapami */
+.timeline-arrow {
+  font-size: 1.5rem;
+  color: var(--timeline-text-light);
+  margin: 0 0.5rem;
+  flex-shrink: 0;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.timeline-item:hover .timeline-arrow {
+  opacity: 0.6;
+}
+
+/* Stage Button */
+.timeline-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.4rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  text-align: center;
+  font-size: 0.65rem;
+  font-family: inherit;
+  color: var(--timeline-text);
+  width: 100%;
+  height: 100px;
+  min-height: 100px;
+  max-height: 100px;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.timeline-stage:hover,
+.timeline-stage:focus {
+  outline: none;
+  transform: translateY(-2px);
+  opacity: 0.8;
+}
+
+.timeline-stage:focus-visible {
+  outline: 3px solid var(--timeline-color-consultations);
+  outline-offset: 2px;
+}
+
+.timeline-stage-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  background: transparent;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.timeline-stage-label {
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  font-size: 0.6rem;
+  display: block;
+  flex: 1;
+  overflow: hidden;
+}
+
+.timeline-stage-indicator {
+  display: none;
+}
+
+/* Kolory dla każdego etapu - tylko kolor ikon i tekstu */
+.timeline-stage--prekonsultacje {
+  color: var(--stage-prekonsultacje);
+}
+
+.timeline-stage--prekonsultacje:hover,
+.timeline-stage--prekonsultacje:focus {
+  color: var(--stage-prekonsultacje);
+}
+
+.timeline-stage--projekt {
+  color: var(--stage-projekt);
+}
+
+.timeline-stage--projekt:hover,
+.timeline-stage--projekt:focus {
+  color: var(--stage-projekt);
+}
+
+.timeline-stage--konsultacje {
+  color: var(--stage-konsultacje);
+}
+
+.timeline-stage--konsultacje:hover,
+.timeline-stage--konsultacje:focus {
+  color: var(--stage-konsultacje);
+}
+
+.timeline-stage--ustawa {
+  color: var(--stage-ustawa);
+}
+
+.timeline-stage--ustawa:hover,
+.timeline-stage--ustawa:focus {
+  color: var(--stage-ustawa);
+}
+
+.timeline-stage--sejm {
+  color: var(--stage-sejm);
+}
+
+.timeline-stage--sejm:hover,
+.timeline-stage--sejm:focus {
+  color: var(--stage-sejm);
+}
+
+.timeline-stage--senat {
+  color: var(--stage-senat);
+}
+
+.timeline-stage--senat:hover,
+.timeline-stage--senat:focus {
+  color: var(--stage-senat);
+}
+
+.timeline-stage--prezydent {
+  color: var(--stage-prezydent);
+}
+
+.timeline-stage--prezydent:hover,
+.timeline-stage--prezydent:focus {
+  color: var(--stage-prezydent);
+}
+
+/* Stare style statusów - zachowane dla kompatybilności */
+.timeline-stage--preparing {
+  border-color: var(--timeline-color-preparing);
+}
+
+.timeline-stage--preparing .timeline-stage-indicator {
+  background: var(--timeline-color-preparing);
+}
+
+.timeline-stage--preparing:hover .timeline-stage-icon,
+.timeline-stage--preparing:focus .timeline-stage-icon {
+  background: var(--timeline-color-preparing);
+  color: white;
+}
+
+.timeline-stage--consultations {
+  border-color: var(--timeline-color-consultations);
+}
+
+.timeline-stage--consultations .timeline-stage-indicator {
+  background: var(--timeline-color-consultations);
+}
+
+.timeline-stage--consultations:hover .timeline-stage-icon,
+.timeline-stage--consultations:focus .timeline-stage-icon {
+  background: var(--timeline-color-consultations);
+  color: white;
+}
+
+.timeline-stage--passed {
+  border-color: var(--timeline-color-passed);
+}
+
+.timeline-stage--passed .timeline-stage-indicator {
+  background: var(--timeline-color-passed);
+}
+
+.timeline-stage--passed:hover .timeline-stage-icon,
+.timeline-stage--passed:focus .timeline-stage-icon {
+  background: var(--timeline-color-passed);
+  color: white;
+}
+
+.timeline-stage--risks {
+  border-color: var(--timeline-color-risks);
+}
+
+.timeline-stage--risks .timeline-stage-indicator {
+  background: var(--timeline-color-risks);
+}
+
+.timeline-stage--risks:hover .timeline-stage-icon,
+.timeline-stage--risks:focus .timeline-stage-icon {
+  background: var(--timeline-color-risks);
+  color: white;
+}
+
+/* Tooltip */
+.timeline-tooltip {
+  position: absolute;
+  top: calc(100% + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--timeline-text);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  max-width: 300px;
+  width: max-content;
+  min-width: 250px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.timeline-tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: var(--timeline-text);
+}
+
+.timeline-tooltip-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 0 0.5rem 0;
+  color: white;
+}
+
+.timeline-tooltip-status {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: white;
+}
+
+.timeline-tooltip-status.timeline-stage--preparing {
+  background: var(--timeline-color-preparing);
+}
+
+.timeline-tooltip-status.timeline-stage--consultations {
+  background: var(--timeline-color-consultations);
+}
+
+.timeline-tooltip-status.timeline-stage--passed {
+  background: var(--timeline-color-passed);
+}
+
+.timeline-tooltip-status.timeline-stage--risks {
+  background: var(--timeline-color-risks);
+}
+
+.timeline-tooltip-description {
+  margin: 0 0 0.75rem 0;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.timeline-tooltip-link {
+  color: #93c5fd;
+  text-decoration: underline;
+  display: inline-block;
+  pointer-events: all;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.timeline-tooltip-link:hover {
+  color: #dbeafe;
+}
+
+/* Modal */
+.timeline-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.timeline-modal {
+  background: white;
+  border-radius: 1rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.timeline-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--timeline-text-light);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.timeline-modal-close:hover,
+.timeline-modal-close:focus {
+  background: var(--timeline-bg-light);
+  color: var(--timeline-text);
+  outline: none;
+}
+
+.timeline-modal-close:focus-visible {
+  outline: 2px solid var(--timeline-color-consultations);
+  outline-offset: 2px;
+}
+
+.timeline-modal-title {
+  margin: 0;
+  padding: 2rem 2rem 1rem 2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--timeline-text);
+}
+
+.timeline-modal-content {
+  padding: 0 2rem 2rem 2rem;
+}
+
+.timeline-modal-section {
+  margin-bottom: 1.5rem;
+}
+
+.timeline-modal-section:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-modal-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--timeline-text-light);
+}
+
+.timeline-modal-section p {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--timeline-text);
+}
+
+.timeline-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.timeline-status-badge.timeline-stage--preparing {
+  background: var(--timeline-color-preparing);
+}
+
+.timeline-status-badge.timeline-stage--consultations {
+  background: var(--timeline-color-consultations);
+}
+
+.timeline-status-badge.timeline-stage--passed {
+  background: var(--timeline-color-passed);
+}
+
+.timeline-status-badge.timeline-stage--risks {
+  background: var(--timeline-color-risks);
+}
+
+.timeline-modal-link {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: var(--timeline-color-consultations);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.timeline-modal-link:hover,
+.timeline-modal-link:focus {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  outline: none;
+}
+
+.timeline-modal-link:focus-visible {
+  outline: 2px solid var(--timeline-color-consultations);
+  outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  :root {
+    --timeline-stage-size: 2rem;
+    --timeline-spacing: 0.5rem;
+  }
+
+  .timeline-stage {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.7rem;
+    height: 90px;
+    min-height: 90px;
+    max-height: 90px;
+  }
+
+  .timeline-item {
+    height: 90px;
+  }
+
+  .timeline-stage-label {
+    font-size: 0.55rem;
+  }
+
+  .timeline-stage-icon {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --timeline-stage-size: 1.75rem;
+    --timeline-spacing: 0.4rem;
+  }
+
+  .timeline-stage {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.65rem;
+    height: 85px;
+    min-height: 85px;
+    max-height: 85px;
+  }
+
+  .timeline-item {
+    height: 85px;
+  }
+
+  .timeline-stage-label {
+    font-size: 0.55rem;
+    line-height: 1.2;
+  }
+
+  .timeline-stage-icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .timeline-container {
+    padding: 3rem 0.5rem 0.5rem 0.5rem;
+  }
+
+  .timeline-line {
+    top: calc(1.75rem / 2);
+    left: 0.5rem;
+    right: 0.5rem;
+  }
+
+  .timeline-list {
+    gap: 0.3rem;
+  }
+
+  :root {
+    --timeline-stage-size: 1.5rem;
+    --timeline-spacing: 0.3rem;
+  }
+
+  .timeline-stage {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.6rem;
+    height: 80px;
+    min-height: 80px;
+    max-height: 80px;
+  }
+
+  .timeline-item {
+    height: 80px;
+  }
+
+  .timeline-stage-label {
+    font-size: 0.5rem;
+    line-height: 1.1;
+  }
+
+  .timeline-stage-icon {
+    font-size: 1.375rem;
+  }
+
+  .timeline-tooltip {
+    position: fixed;
+    left: 50%;
+    top: auto;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    max-width: calc(100% - 2rem);
+    width: auto;
+  }
+
+  .timeline-tooltip::before {
+    display: none;
+  }
+
+  .timeline-modal {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .timeline-modal-title {
+    padding: 1.5rem 1rem 1rem 1rem;
+    font-size: 1.25rem;
+  }
+
+  .timeline-modal-content {
+    padding: 0 1rem 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --timeline-stage-size: 2rem;
+    --timeline-spacing: 0.5rem;
+  }
+
+  .timeline-container {
+    padding: 3rem 0.5rem 0.5rem 0.5rem;
+  }
+
+  .timeline-list {
+    gap: 0.5rem;
+  }
+
+  .timeline-item {
+    min-width: 80px;
+  }
+
+  .timeline-stage {
+    max-width: 100px;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.7rem;
+    height: 75px;
+    min-height: 75px;
+    max-height: 75px;
+  }
+
+  .timeline-item {
+    height: 75px;
+  }
+
+  .timeline-stage-icon {
+    font-size: 1.25rem;
+  }
+
+  .timeline-stage-label {
+    font-size: 0.6rem;
+    line-height: 1.2;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .timeline-stage {
+    border-width: 3px;
+  }
+
+  .timeline-stage:focus-visible {
+    outline-width: 4px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .timeline-stage,
+  .timeline-stage-icon,
+  .timeline-stage-indicator,
+  .timeline-modal-link,
+  .timeline-modal-close {
+    transition: none;
+  }
+
+  .timeline-modal-overlay,
+  .timeline-modal {
+    animation: none;
+  }
+}
+
