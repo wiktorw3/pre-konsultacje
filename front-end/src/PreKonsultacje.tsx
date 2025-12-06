@@ -132,13 +132,9 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
         {/* Main Content - Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[65%_35%] gap-8">
           {/* Left Column - Bills */}
-          <section className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Proces Legislacyjny / Nowe Prawo:
-            </h3>
-
+          <section>
             {/* Filters and Search Row */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-4">
               {/* Filter Buttons */}
               <div className="flex gap-2">
                 <button
@@ -178,8 +174,9 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
               </div>
             </div>
 
-            {/* Bills List */}
-            <div className="bg-white/60 rounded-2xl overflow-hidden divide-y divide-gray-200">
+            {/* Bills List - Scrollable Container */}
+            <div className="max-h-80 overflow-y-auto pr-1">
+              <div className="bg-white/60 rounded-2xl overflow-hidden divide-y divide-gray-200">
               {filteredBills.length > 0 ? (
                 filteredBills.map((bill) => (
                   <div
@@ -206,6 +203,7 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
                   Nie znaleziono pasujących wyników
                 </div>
               )}
+              </div>
             </div>
           </section>
 
@@ -287,7 +285,7 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
 
       {/* Footer */}
       <footer className="max-w-[1200px] mx-auto mt-6 px-4 text-center text-sm text-gray-500">
-        © 2025 Obywatelski Portal • Projekt hackathonowy
+        © 2025 Obywatelski Portal • HackNation 2025
       </footer>
     </div>
   )
