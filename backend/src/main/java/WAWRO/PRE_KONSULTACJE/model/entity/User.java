@@ -4,6 +4,10 @@ import WAWRO.PRE_KONSULTACJE.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -22,4 +26,13 @@ public class User {
     private String identityNumber;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private boolean enabled;
+    private LocalDateTime dateCreated;
+
+    @OneToMany(
+            mappedBy = "author",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Set<PreConsultation> preConsultations = new HashSet<>();
 }
