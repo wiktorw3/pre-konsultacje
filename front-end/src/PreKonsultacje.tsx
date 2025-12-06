@@ -252,6 +252,91 @@ const getStatusStyles = (status: BillStatus): string => {
   }
 }
 
+// All legislative stages
+const allStages = ['Pomysł', 'Prekonsultacje', 'Projekt', 'Konsultacje', 'Ustawa', 'Sejm', 'Senat', 'Prezydent']
+
+// Determine which stages are complete based on status
+const getCompletedStages = (status: BillStatus): number => {
+  switch (status) {
+    case 'Złożona':
+      return 5 // Up to Ustawa
+    case 'W Sejmie':
+      return 6 // Up to Sejm
+    case 'W Senacie':
+      return 7 // Up to Senat
+    case 'Podpisana':
+    case 'Weto Prezydenta':
+      return 8 // All stages
+    default:
+      return 0
+  }
+}
+
+// Get current stage name
+const getCurrentStageName = (status: BillStatus): string => {
+  switch (status) {
+    case 'Złożona':
+      return 'Złożona'
+    case 'W Sejmie':
+      return 'W Sejmie'
+    case 'W Senacie':
+      return 'W Senacie'
+    case 'Podpisana':
+      return 'Podpisana'
+    case 'Weto Prezydenta':
+      return 'Weto'
+    default:
+      return status
+  }
+}
+
+// Train visualization component
+const BillTrain = ({ status }: { status: BillStatus }) => {
+  const completedStages = getCompletedStages(status)
+  const isVetoed = status === 'Weto Prezydenta'
+  const isSigned = status === 'Podpisana'
+  
+  return (
+    <div className="flex items-center flex-wrap gap-y-1">
+      {allStages.map((stage, index) => {
+        const isCompleted = index < completedStages
+        const isLast = index === allStages.length - 1
+        
+        // Determine colors
+        let bgColor = 'bg-gray-100 text-gray-400'
+        
+        if (isCompleted) {
+          if (isLast && isVetoed) {
+            bgColor = 'bg-red-500 text-white'
+          } else if (isLast && isSigned) {
+            bgColor = 'bg-green-500 text-white'
+          } else {
+            bgColor = 'bg-green-500 text-white'
+          }
+        }
+        
+        return (
+          <div key={stage} className="flex items-center">
+            {/* Wagon with name */}
+            <div 
+              className={`px-2 py-1 text-xs font-medium rounded ${bgColor}`}
+              title={stage}
+            >
+              {stage}
+            </div>
+            {/* Arrow connector */}
+            {!isLast && (
+              <span className={`text-xs mx-1 ${isCompleted ? 'text-green-400' : 'text-gray-300'}`}>
+                →
+              </span>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBillClick, onConsultationClick }: LandingPageProps) {
   const [filterType, setFilterType] = useState<BillType>('ustawa')
   const [searchQuery, setSearchQuery] = useState('')
@@ -275,25 +360,11 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
     <div className="min-h-screen bg-neutral-100">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-4">
-          <img src={mPrawoLogo} alt="mPrawo" className="h-10 flex-shrink-0" />
-          
-          {/* Search Input - Center */}
-          <div className="relative flex-1 max-w-md hidden sm:block">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              🔍
-            </span>
-            <input
-              type="text"
-              placeholder="Szukaj ustawy lub projektu..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all text-sm"
-            />
-          </div>
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+          <img src={mPrawoLogo} alt="mPrawo" className="h-10" />
           
           {/* Right Side - Login/Profile */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-3">
             {isLoggedIn ? (
               <>
                 {/* User Profile Chip */}
@@ -334,8 +405,8 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
               </button>
             )}
           </div>
-        </div>
-      </header>
+          </div>
+        </header>
 
       {/* Timeline Section */}
       <div className="bg-gray-50 border-b border-gray-200">
@@ -387,66 +458,86 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
       {/* Main Container */}
       <div className="max-w-[1200px] mx-auto bg-gray-100 rounded-3xl shadow-lg p-6 md:p-10">
 
-        {/* Bills Section */}
-        <div>
-          <section>
-            {/* Filter Buttons */}
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={() => setFilterType('ustawa')}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  filterType === 'ustawa'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
-                }`}
-              >
-                Ustawy
-              </button>
-              <button
-                onClick={() => setFilterType('projekt')}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                  filterType === 'projekt'
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
-                }`}
-              >
-                Projekty
-              </button>
-            </div>
+        {/* Search and Filter Row */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
+          {/* Search Input */}
+          <div className="relative flex-1 w-full">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              🔍
+            </span>
+            <input
+              type="text"
+              placeholder="Szukaj ustawy lub projektu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-full border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
+            />
+          </div>
+          
+          {/* Filter Buttons */}
+          <div className="flex gap-2 flex-shrink-0">
+            <button
+              onClick={() => setFilterType('ustawa')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                filterType === 'ustawa'
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
+              }`}
+            >
+              Ustawy
+            </button>
+            <button
+              onClick={() => setFilterType('projekt')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                filterType === 'projekt'
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
+              }`}
+            >
+              Projekty
+            </button>
+          </div>
+        </div>
 
-            {/* Bills List - Scrollable Container */}
-            <div className="md:max-h-[400px] overflow-y-auto pr-1">
-              <div className="bg-white/60 rounded-2xl overflow-hidden divide-y divide-gray-200">
+        {/* Bills List - Scrollable Container */}
+        <div className="md:max-h-[500px] overflow-y-auto pr-1">
+              <div className="space-y-3">
               {filteredBills.length > 0 ? (
                 filteredBills.map((bill) => (
                   <div
                     key={bill.id}
                     onClick={() => onBillClick(bill)}
-                    className="flex items-center justify-between p-4 hover:bg-white/80 cursor-pointer transition-colors"
+                    className="bg-white rounded-xl p-4 hover:bg-gray-50 cursor-pointer transition-colors border border-gray-200 shadow-sm"
                   >
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-gray-900 truncate">
+                    {/* Top Row - Name and Status Badge */}
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <h4 className="font-semibold text-gray-900 text-sm leading-tight">
                         {bill.name}
                       </h4>
-                      <p className="text-sm text-gray-500 mt-0.5">{bill.date}</p>
-                    </div>
                     <span
-                      className={`ml-4 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusStyles(
+                        className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${getStatusStyles(
                         bill.status
                       )}`}
                     >
-                      {bill.status}
+                        {getCurrentStageName(bill.status)}
+                      </span>
+                    </div>
+                    
+                    {/* Train Visualization */}
+                    <div className="flex items-center justify-between">
+                      <BillTrain status={bill.status} />
+                      <span className="text-xs text-gray-400 ml-3">
+                        {bill.date}
                     </span>
+                    </div>
                   </div>
                 ))
               ) : (
-                <div className="p-6 text-center text-gray-500">
+                <div className="p-6 text-center text-gray-500 bg-white rounded-xl">
                   Nie znaleziono pasujących wyników
                 </div>
               )}
-              </div>
-            </div>
-          </section>
+        </div>
         </div>
       </div>
 
