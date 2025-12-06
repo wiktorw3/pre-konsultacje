@@ -127,37 +127,61 @@ export const preConsultations: Consultation[] = [
   { 
     id: 1, 
     type: 'pre',
-    title: 'Pre-konsultacje ws. Ustawy o Kryptowalutach', 
-    category: 'Cyfryzacja', 
+    title: 'Regulacje E-sportu', 
+    category: 'Sport', 
     deadline: '15.12.2025',
-    description: 'Ministerstwo Cyfryzacji zaprasza do udziału w pre-konsultacjach dotyczących planowanej regulacji rynku kryptowalut. Celem jest zebranie opinii obywateli i ekspertów przed przygotowaniem projektu ustawy.',
-    goals: 'Zebranie opinii publicznej na temat regulacji kryptowalut',
-    assumptions: 'Otwarta dyskusja, uwzględnienie głosów wszystkich interesariuszy',
-    impacts: 'Lepiej dopasowane prawo do potrzeb rynku i obywateli',
+    description: 'Ministerstwo Sportu zaprasza do udziału w pre-konsultacjach dotyczących prawnego uregulowania branży e-sportowej w Polsce.',
+    goals: 'Stworzenie ram prawnych dla profesjonalnego e-sportu',
+    assumptions: 'Status zawodnika e-sportowego, organizacja turniejów, ochrona nieletnich',
+    impacts: 'Rozwój branży e-sportowej, ochrona graczy, nowe miejsca pracy',
     timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
   },
   { 
     id: 2, 
     type: 'pre',
-    title: 'Pre-konsultacje ws. Reformy Emerytalnej', 
-    category: 'Finanse', 
+    title: 'Praca zdalna w administracji', 
+    category: 'Administracja', 
     deadline: '18.12.2025',
-    description: 'Ministerstwo Rodziny i Polityki Społecznej rozpoczyna pre-konsultacje w sprawie reformy systemu emerytalnego. Zapraszamy do zgłaszania uwag i propozycji.',
-    goals: 'Wypracowanie kierunków reformy systemu emerytalnego',
-    assumptions: 'Dialog społeczny, analiza rozwiązań z innych krajów',
-    impacts: 'Stabilny i sprawiedliwy system emerytalny dla przyszłych pokoleń',
+    description: 'Konsultacje dotyczące rozszerzenia możliwości pracy zdalnej w urzędach administracji publicznej.',
+    goals: 'Elastyczne formy pracy dla urzędników',
+    assumptions: 'Hybrydowy model pracy, cyberbezpieczeństwo, dostępność usług',
+    impacts: 'Lepsza równowaga życia zawodowego, oszczędności dla budżetu',
     timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
   },
   { 
     id: 3, 
     type: 'pre',
-    title: 'Pre-konsultacje ws. Ochrony Danych', 
-    category: 'Prawo', 
+    title: 'Cyfrowa tożsamość obywatela', 
+    category: 'Cyfryzacja', 
     deadline: '22.12.2025',
-    description: 'UODO organizuje pre-konsultacje dotyczące wzmocnienia ochrony danych osobowych w erze sztucznej inteligencji.',
-    goals: 'Określenie nowych standardów ochrony prywatności',
-    assumptions: 'Zgodność z RODO, uwzględnienie rozwoju technologii',
-    impacts: 'Silniejsza ochrona prywatności obywateli',
+    description: 'Dyskusja nad wprowadzeniem jednolitego systemu cyfrowej tożsamości dla wszystkich obywateli.',
+    goals: 'Bezpieczna i wygodna identyfikacja online',
+    assumptions: 'Integracja z mObywatelem, biometria, blockchain',
+    impacts: 'Szybsze załatwianie spraw, redukcja oszustw tożsamości',
+    timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
+  },
+  { 
+    id: 4, 
+    type: 'pre',
+    title: 'Ochrona influencerów i twórców', 
+    category: 'Media', 
+    deadline: '28.12.2025',
+    description: 'Konsultacje dotyczące ochrony prawnej twórców internetowych i regulacji współpracy z markami.',
+    goals: 'Uczciwe zasady współpracy influencerów z reklamodawcami',
+    assumptions: 'Transparentność reklam, ochrona przed nieuczciwymi umowami',
+    impacts: 'Większa ochrona twórców, zaufanie konsumentów',
+    timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
+  },
+  { 
+    id: 5, 
+    type: 'pre',
+    title: 'Zielone miasta przyszłości', 
+    category: 'Środowisko', 
+    deadline: '05.01.2026',
+    description: 'Dyskusja nad nowymi standardami zieleni miejskiej i infrastruktury ekologicznej.',
+    goals: 'Więcej terenów zielonych w miastach',
+    assumptions: 'Minimalne normy zieleni, dachy zielone, parki kieszonkowe',
+    impacts: 'Lepsza jakość życia, niższe temperatury w miastach',
     timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
   },
 ]
@@ -231,6 +255,7 @@ const getStatusStyles = (status: BillStatus): string => {
 export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBillClick, onConsultationClick }: LandingPageProps) {
   const [filterType, setFilterType] = useState<BillType>('ustawa')
   const [searchQuery, setSearchQuery] = useState('')
+  const [consultationType, setConsultationType] = useState<'Prekonsultacje' | 'Konsultacje'>('Prekonsultacje')
 
   // Filter bills based on type and search query
   const filteredBills = bills.filter((bill) => {
@@ -239,15 +264,36 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
     return matchesType && matchesSearch
   })
 
+  // Handle timeline stage selection
+  const handleStageSelect = (stageName: string) => {
+    if (stageName === 'Prekonsultacje' || stageName === 'Konsultacje') {
+      setConsultationType(stageName)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-neutral-100">
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 bg-white shadow-sm">
-        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
-          <img src={mPrawoLogo} alt="mPrawo" className="h-10" />
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between gap-4">
+          <img src={mPrawoLogo} alt="mPrawo" className="h-10 flex-shrink-0" />
+          
+          {/* Search Input - Center */}
+          <div className="relative flex-1 max-w-md hidden sm:block">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              🔍
+            </span>
+            <input
+              type="text"
+              placeholder="Szukaj ustawy lub projektu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all text-sm"
+            />
+          </div>
           
           {/* Right Side - Login/Profile */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {isLoggedIn ? (
               <>
                 {/* User Profile Chip */}
@@ -293,7 +339,47 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
 
       {/* Timeline Section */}
       <div className="bg-gray-50 border-b border-gray-200">
-        <Timeline data={exampleTimelineData} />
+        <Timeline 
+          data={exampleTimelineData} 
+          selectedStage={consultationType} 
+          onStageSelect={handleStageSelect}
+        />
+      </div>
+
+      {/* Consultation Section - Below Timeline */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-6">
+          {/* Tagline - changes based on selection */}
+          <p className="text-sm text-gray-600 leading-relaxed mb-4">
+            {consultationType === 'Prekonsultacje' 
+              ? 'Współtwórz lepsze prawo — podziel się uwagami do celów, założeń i skutków proponowanych zmian prawnych'
+              : 'Weź udział w konsultacjach publicznych — zgłoś swoje uwagi do projektów ustaw i rozporządzeń'
+            }
+          </p>
+
+          {/* List - Horizontal Scroll on Mobile */}
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {(consultationType === 'Prekonsultacje' ? preConsultations : consultations).map((item) => (
+              <div
+                key={item.id}
+                onClick={() => onConsultationClick(item)}
+                className="flex-shrink-0 w-64 bg-gray-50 rounded-xl p-4 hover:bg-gray-100 cursor-pointer transition-colors border border-gray-200"
+              >
+                <h4 className="font-semibold text-gray-900 text-sm leading-snug">
+                  {item.title}
+                </h4>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 font-medium">
+                    {item.category}
+                  </span>
+                  <span className="text-gray-500">
+                    Do kiedy: <span className="font-bold text-gray-700">{item.deadline}</span>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -301,53 +387,35 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
       {/* Main Container */}
       <div className="max-w-[1200px] mx-auto bg-gray-100 rounded-3xl shadow-lg p-6 md:p-10">
 
-        {/* Main Content - Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Bills */}
+        {/* Bills Section */}
+        <div>
           <section>
-            {/* Filters and Search Row */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-4">
-              {/* Filter Buttons */}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setFilterType('ustawa')}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                    filterType === 'ustawa'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
-                  }`}
-                >
-                  Ustawy
-                </button>
-                <button
-                  onClick={() => setFilterType('projekt')}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                    filterType === 'projekt'
-                      ? 'bg-gray-900 text-white'
-                      : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
-                  }`}
-                >
-                  Projekty
-                </button>
-              </div>
-
-              {/* Search Input */}
-              <div className="relative flex-1 w-full sm:w-auto">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  🔍
-                </span>
-                <input
-                  type="text"
-                  placeholder="Szukaj po nazwie ustawy..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
-                />
-              </div>
+            {/* Filter Buttons */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setFilterType('ustawa')}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  filterType === 'ustawa'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
+                }`}
+              >
+                Ustawy
+              </button>
+              <button
+                onClick={() => setFilterType('projekt')}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  filterType === 'projekt'
+                    ? 'bg-gray-900 text-white'
+                    : 'bg-white text-gray-900 border border-gray-400 hover:border-gray-600'
+                }`}
+              >
+                Projekty
+              </button>
             </div>
 
             {/* Bills List - Scrollable Container */}
-            <div className="md:max-h-52 overflow-y-auto pr-1">
+            <div className="md:max-h-[400px] overflow-y-auto pr-1">
               <div className="bg-white/60 rounded-2xl overflow-hidden divide-y divide-gray-200">
               {filteredBills.length > 0 ? (
                 filteredBills.map((bill) => (
@@ -379,82 +447,6 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
               </div>
             </div>
           </section>
-
-          {/* Right Column - Consultations */}
-          <aside className="space-y-6">
-            {/* Pre-konsultacje Section */}
-            <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Pre-konsultacje
-              </h3>
-              <div className="space-y-3">
-                {preConsultations.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => onConsultationClick(item)}
-                    className="bg-white/60 rounded-xl p-4 hover:bg-white/80 cursor-pointer transition-colors"
-                  >
-                    <h4 className="font-semibold text-gray-900 text-sm leading-snug">
-                      {item.title}
-                    </h4>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 font-medium">
-                        {item.category}
-                      </span>
-                      <span className="text-gray-500">
-                        Do kiedy: <span className="font-bold text-gray-700">{item.deadline}</span>
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* Otwarte Konsultacje Section */}
-            <section>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Otwarte Konsultacje
-              </h3>
-              <div className="bg-white/60 rounded-xl overflow-hidden">
-                {/* Table Header */}
-                <div className="hidden sm:grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-2 bg-white/40 text-xs font-bold text-gray-600 border-b border-gray-200">
-                  <span>Konsultacja</span>
-                  <span>Branża</span>
-                  <span>Do kiedy?</span>
-                </div>
-                {/* Table Body */}
-                <div className="divide-y divide-gray-200">
-                  {consultations.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => onConsultationClick(item)}
-                      className="p-4 hover:bg-white/80 cursor-pointer transition-colors"
-                    >
-                      {/* Desktop View */}
-                      <div className="hidden sm:grid grid-cols-[1fr_auto_auto] gap-4 items-center text-sm">
-                        <span className="font-medium text-gray-900 leading-snug">
-                          {item.title}
-                        </span>
-                        <span className="text-gray-600 whitespace-nowrap">{item.category}</span>
-                        <span className="font-bold text-gray-700 whitespace-nowrap">{item.deadline}</span>
-                      </div>
-                      {/* Mobile View */}
-                      <div className="sm:hidden">
-                        <h4 className="font-semibold text-gray-900 text-sm">
-                          {item.title}
-                        </h4>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                          <span>Branża: <span className="text-gray-700">{item.category}</span></span>
-                          <span>•</span>
-                          <span>Do: <span className="font-bold text-gray-700">{item.deadline}</span></span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-          </aside>
         </div>
       </div>
 
