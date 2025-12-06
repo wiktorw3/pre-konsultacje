@@ -12,14 +12,16 @@ dist/
 .env.*.local
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
+# Zastąpienie/uzupełnienie standardowego wykluczenia IntelliJ IDEA
 .idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+.idea/
+**/.idea/
 
 # OS files
 .DS_Store
@@ -32,3 +34,34 @@ npm-debug.log*
 # Vite cache
 .vite/
 
+---
+# 🚀 Spring Boot & Java
+---
+**/*.[class](https://fileinfo.com/extension/class)
+**/*.class
+**/build/ # Katalog wynikowy dla Gradle
+**/target/ # Katalog wynikowy dla Maven
+
+**/lib/
+
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
+
+**/log/
