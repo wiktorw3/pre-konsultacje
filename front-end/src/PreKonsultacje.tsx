@@ -1,60 +1,221 @@
 import { useState } from 'react'
-
-// Types
-type BillType = 'ustawa' | 'projekt'
-type BillStatus = 'Veto Prezydenta' | 'Podpisana' | 'W Senacie' | 'W Sejmie' | 'Złożona'
-
-interface Bill {
-  id: number
-  name: string
-  date: string
-  status: BillStatus
-  type: BillType
-}
-
-interface Consultation {
-  id: number
-  title: string
-  category: string
-  deadline: string
-}
+import { Bill, BillType, BillStatus, Consultation } from './types'
+import mPrawoLogo from './assets/mPrawo-logo3.png'
 
 interface LandingPageProps {
   isLoggedIn: boolean
   onLoginClick: () => void
   onLogout: () => void
+  onBillClick: (bill: Bill) => void
+  onConsultationClick: (consultation: Consultation) => void
 }
 
-// Mock Data
-const bills: Bill[] = [
-  { id: 1, name: 'Ustawa o Kryptowalutach', date: '4.12.2025', status: 'Veto Prezydenta', type: 'ustawa' },
-  { id: 2, name: 'Ustawa o Ochronie Środowiska', date: '3.12.2025', status: 'Podpisana', type: 'ustawa' },
-  { id: 3, name: 'Ustawa o Sztucznej Inteligencji', date: '2.12.2025', status: 'W Senacie', type: 'ustawa' },
-  { id: 4, name: 'Ustawa o Cyfryzacji Urzędów', date: '1.12.2025', status: 'W Sejmie', type: 'ustawa' },
-  { id: 5, name: 'Ustawa o Odnawialnych Źródłach Energii', date: '30.11.2025', status: 'Złożona', type: 'ustawa' },
-  { id: 6, name: 'Projekt Reformy Edukacji', date: '4.12.2025', status: 'W Sejmie', type: 'projekt' },
-  { id: 7, name: 'Projekt Ustawy o E-Zdrowiu', date: '3.12.2025', status: 'Złożona', type: 'projekt' },
-  { id: 8, name: 'Projekt Zmian w Kodeksie Pracy', date: '2.12.2025', status: 'W Senacie', type: 'projekt' },
-  { id: 9, name: 'Projekt Ustawy o Transporcie Publicznym', date: '1.12.2025', status: 'W Sejmie', type: 'projekt' },
+// Mock Data with extended fields
+export const bills: Bill[] = [
+  { 
+    id: 1, 
+    name: 'Ustawa o Kryptowalutach', 
+    date: '4.12.2025', 
+    status: 'Weto Prezydenta', 
+    type: 'ustawa',
+    summary: 'Ustawa regulująca obrót kryptowalutami w Polsce, wprowadzająca wymogi licencyjne dla giełd oraz zasady opodatkowania zysków z handlu cyfrowymi aktywami.',
+    goals: 'Uregulowanie rynku kryptowalut i ochrona inwestorów',
+    assumptions: 'Licencjonowanie giełd, KYC/AML, podatek 19%',
+    impacts: 'Wzrost bezpieczeństwa inwestorów, nowe wpływy podatkowe',
+    timelineSteps: ['Weto Prezydenta', 'Głosowanie w Senacie', 'Głosowanie w Sejmie', 'Inicjatywa ustawodawcza']
+  },
+  { 
+    id: 2, 
+    name: 'Ustawa o Ochronie Środowiska', 
+    date: '3.12.2025', 
+    status: 'Podpisana', 
+    type: 'ustawa',
+    summary: 'Kompleksowa ustawa wzmacniająca ochronę środowiska naturalnego poprzez zaostrzenie norm emisji i wprowadzenie nowych obszarów chronionych.',
+    goals: 'Redukcja emisji CO2 o 40% do 2030 roku',
+    assumptions: 'Nowe normy emisji, rozszerzenie parków narodowych',
+    impacts: 'Poprawa jakości powietrza, ochrona bioróżnorodności',
+    timelineSteps: ['Podpisana', 'Głosowanie w Senacie', 'Głosowanie w Sejmie', 'Inicjatywa ustawodawcza']
+  },
+  { 
+    id: 3, 
+    name: 'Ustawa o Sztucznej Inteligencji', 
+    date: '2.12.2025', 
+    status: 'W Senacie', 
+    type: 'ustawa',
+    summary: 'Ustawa określająca ramy prawne dla rozwoju i stosowania systemów sztucznej inteligencji w Polsce, zgodna z regulacjami UE.',
+    goals: 'Bezpieczny rozwój AI z poszanowaniem praw człowieka',
+    assumptions: 'Klasyfikacja ryzyka AI, wymogi transparentności',
+    impacts: 'Zwiększenie innowacyjności, ochrona przed nadużyciami',
+    timelineSteps: ['W Senacie', 'Głosowanie w Sejmie', 'Inicjatywa ustawodawcza']
+  },
+  { 
+    id: 4, 
+    name: 'Ustawa o Cyfryzacji Urzędów', 
+    date: '1.12.2025', 
+    status: 'W Sejmie', 
+    type: 'ustawa',
+    summary: 'Ustawa wprowadzająca obowiązek cyfryzacji wszystkich usług administracji publicznej do 2027 roku.',
+    goals: 'Pełna cyfryzacja usług publicznych',
+    assumptions: 'e-Usługi, cyfrowa tożsamość, interoperacyjność',
+    impacts: 'Oszczędność czasu obywateli, redukcja kosztów administracji',
+    timelineSteps: ['W Sejmie', 'Inicjatywa ustawodawcza']
+  },
+  { 
+    id: 5, 
+    name: 'Ustawa o Odnawialnych Źródłach Energii', 
+    date: '30.11.2025', 
+    status: 'Złożona', 
+    type: 'ustawa',
+    summary: 'Nowelizacja ustawy OZE wprowadzająca nowe mechanizmy wsparcia dla prosumentów i spółdzielni energetycznych.',
+    goals: '50% energii z OZE do 2030 roku',
+    assumptions: 'Wyższe taryfy gwarantowane, ulgi dla prosumentów',
+    impacts: 'Rozwój energetyki rozproszonej, niższe rachunki',
+    timelineSteps: ['Złożona', 'Inicjatywa ustawodawcza']
+  },
+  { 
+    id: 6, 
+    name: 'Projekt Reformy Edukacji', 
+    date: '4.12.2025', 
+    status: 'W Sejmie', 
+    type: 'projekt',
+    summary: 'Projekt zakładający modernizację systemu edukacji z naciskiem na kompetencje cyfrowe i krytyczne myślenie.',
+    goals: 'Nowoczesna edukacja przygotowująca do wyzwań XXI wieku',
+    assumptions: 'Nowa podstawa programowa, szkolenia nauczycieli',
+    impacts: 'Lepsze przygotowanie uczniów do rynku pracy',
+    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
+  },
+  { 
+    id: 7, 
+    name: 'Projekt Ustawy o E-Zdrowiu', 
+    date: '3.12.2025', 
+    status: 'Złożona', 
+    type: 'projekt',
+    summary: 'Projekt rozszerzający funkcjonalność Internetowego Konta Pacjenta i wprowadzający telemedycynę jako standard.',
+    goals: 'Powszechny dostęp do usług telemedycznych',
+    assumptions: 'Rozbudowa IKP, refundacja teleporad',
+    impacts: 'Łatwiejszy dostęp do lekarzy, krótsze kolejki',
+    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
+  },
+  { 
+    id: 8, 
+    name: 'Projekt Zmian w Kodeksie Pracy', 
+    date: '2.12.2025', 
+    status: 'W Senacie', 
+    type: 'projekt',
+    summary: 'Projekt wprowadzający 4-dniowy tydzień pracy jako opcję dla pracodawców i pracowników.',
+    goals: 'Poprawa work-life balance Polaków',
+    assumptions: 'Dobrowolność, zachowanie wynagrodzenia',
+    impacts: 'Wyższa produktywność, lepsze zdrowie pracowników',
+    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
+  },
+  { 
+    id: 9, 
+    name: 'Projekt Ustawy o Transporcie Publicznym', 
+    date: '1.12.2025', 
+    status: 'W Sejmie', 
+    type: 'projekt',
+    summary: 'Projekt zakładający integrację biletową w całym kraju i rozwój zeroemisyjnego transportu publicznego.',
+    goals: 'Jeden bilet na cały transport publiczny w Polsce',
+    assumptions: 'Wspólny system biletowy, dotacje na autobusy EV',
+    impacts: 'Wygodniejsze podróżowanie, czystsze powietrze',
+    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
+  },
 ]
 
-const preConsultations: Consultation[] = [
-  { id: 1, title: 'Pre-konsultacje ws. Ustawy o Kryptowalutach', category: 'Cyfryzacja', deadline: '15.12.2025' },
-  { id: 2, title: 'Pre-konsultacje ws. Reformy Emerytalnej', category: 'Finanse', deadline: '18.12.2025' },
-  { id: 3, title: 'Pre-konsultacje ws. Ochrony Danych', category: 'Prawo', deadline: '22.12.2025' },
+export const preConsultations: Consultation[] = [
+  { 
+    id: 1, 
+    type: 'pre',
+    title: 'Pre-konsultacje ws. Ustawy o Kryptowalutach', 
+    category: 'Cyfryzacja', 
+    deadline: '15.12.2025',
+    description: 'Ministerstwo Cyfryzacji zaprasza do udziału w pre-konsultacjach dotyczących planowanej regulacji rynku kryptowalut. Celem jest zebranie opinii obywateli i ekspertów przed przygotowaniem projektu ustawy.',
+    goals: 'Zebranie opinii publicznej na temat regulacji kryptowalut',
+    assumptions: 'Otwarta dyskusja, uwzględnienie głosów wszystkich interesariuszy',
+    impacts: 'Lepiej dopasowane prawo do potrzeb rynku i obywateli',
+    timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
+  },
+  { 
+    id: 2, 
+    type: 'pre',
+    title: 'Pre-konsultacje ws. Reformy Emerytalnej', 
+    category: 'Finanse', 
+    deadline: '18.12.2025',
+    description: 'Ministerstwo Rodziny i Polityki Społecznej rozpoczyna pre-konsultacje w sprawie reformy systemu emerytalnego. Zapraszamy do zgłaszania uwag i propozycji.',
+    goals: 'Wypracowanie kierunków reformy systemu emerytalnego',
+    assumptions: 'Dialog społeczny, analiza rozwiązań z innych krajów',
+    impacts: 'Stabilny i sprawiedliwy system emerytalny dla przyszłych pokoleń',
+    timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
+  },
+  { 
+    id: 3, 
+    type: 'pre',
+    title: 'Pre-konsultacje ws. Ochrony Danych', 
+    category: 'Prawo', 
+    deadline: '22.12.2025',
+    description: 'UODO organizuje pre-konsultacje dotyczące wzmocnienia ochrony danych osobowych w erze sztucznej inteligencji.',
+    goals: 'Określenie nowych standardów ochrony prywatności',
+    assumptions: 'Zgodność z RODO, uwzględnienie rozwoju technologii',
+    impacts: 'Silniejsza ochrona prywatności obywateli',
+    timelineSteps: ['Pre-konsultacje otwarte', 'Pomysł regulacji', 'Identyfikacja problemu']
+  },
 ]
 
-const consultations: Consultation[] = [
-  { id: 1, title: 'Konsultacje ws. Służby Zdrowia', category: 'Zdrowie', deadline: '20.12.2025' },
-  { id: 2, title: 'Konsultacje ws. Programu Mieszkaniowego', category: 'Budownictwo', deadline: '25.12.2025' },
-  { id: 3, title: 'Konsultacje ws. Transportu Miejskiego', category: 'Transport', deadline: '28.12.2025' },
-  { id: 4, title: 'Konsultacje ws. Ochrony Klimatu', category: 'Środowisko', deadline: '30.12.2025' },
+export const consultations: Consultation[] = [
+  { 
+    id: 1, 
+    type: 'consultation',
+    title: 'Konsultacje ws. Służby Zdrowia', 
+    category: 'Zdrowie', 
+    deadline: '20.12.2025',
+    description: 'Ministerstwo Zdrowia prowadzi konsultacje publiczne projektu ustawy o reorganizacji służby zdrowia. Projekt zakłada zwiększenie nakładów i skrócenie kolejek.',
+    goals: 'Poprawa dostępności i jakości usług zdrowotnych',
+    assumptions: 'Zwiększenie finansowania, cyfryzacja, nowe standardy',
+    impacts: 'Krótsze kolejki, lepsza opieka nad pacjentami',
+    timelineSteps: ['Konsultacje publiczne', 'Projekt regulacji', 'Pomysł regulacji']
+  },
+  { 
+    id: 2, 
+    type: 'consultation',
+    title: 'Konsultacje ws. Programu Mieszkaniowego', 
+    category: 'Budownictwo', 
+    deadline: '25.12.2025',
+    description: 'Konsultacje społeczne nowego programu mieszkaniowego „Mieszkanie dla Każdego". Program ma ułatwić młodym Polakom zakup pierwszego mieszkania.',
+    goals: 'Zwiększenie dostępności mieszkań dla młodych',
+    assumptions: 'Dopłaty do kredytów, budowa mieszkań komunalnych',
+    impacts: 'Więcej Polaków z własnym mieszkaniem',
+    timelineSteps: ['Konsultacje publiczne', 'Projekt regulacji', 'Pomysł regulacji']
+  },
+  { 
+    id: 3, 
+    type: 'consultation',
+    title: 'Konsultacje ws. Transportu Miejskiego', 
+    category: 'Transport', 
+    deadline: '28.12.2025',
+    description: 'Ministerstwo Infrastruktury konsultuje projekt ustawy o rozwoju zeroemisyjnego transportu miejskiego.',
+    goals: 'Czyste powietrze w miastach dzięki elektromobilności',
+    assumptions: 'Dotacje na autobusy elektryczne, infrastruktura ładowania',
+    impacts: 'Redukcja smogu, cichszy transport publiczny',
+    timelineSteps: ['Konsultacje publiczne', 'Projekt regulacji', 'Pomysł regulacji']
+  },
+  { 
+    id: 4, 
+    type: 'consultation',
+    title: 'Konsultacje ws. Ochrony Klimatu', 
+    category: 'Środowisko', 
+    deadline: '30.12.2025',
+    description: 'Konsultacje publiczne Narodowego Planu Ochrony Klimatu do 2040 roku. Dokument określa ścieżkę transformacji energetycznej Polski.',
+    goals: 'Neutralność klimatyczna Polski do 2050 roku',
+    assumptions: 'Odejście od węgla, rozwój OZE, efektywność energetyczna',
+    impacts: 'Czyste środowisko dla przyszłych pokoleń',
+    timelineSteps: ['Konsultacje publiczne', 'Projekt regulacji', 'Pomysł regulacji']
+  },
 ]
 
 // Status color mapping
 const getStatusStyles = (status: BillStatus): string => {
   switch (status) {
-    case 'Veto Prezydenta':
+    case 'Weto Prezydenta':
       return 'bg-[#e5572f] text-white'
     case 'Podpisana':
       return 'bg-[#3c9d5b] text-white'
@@ -66,7 +227,7 @@ const getStatusStyles = (status: BillStatus): string => {
   }
 }
 
-export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: LandingPageProps) {
+export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBillClick, onConsultationClick }: LandingPageProps) {
   const [filterType, setFilterType] = useState<BillType>('ustawa')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -78,19 +239,18 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
   })
 
   return (
-    <div className="min-h-screen bg-neutral-100 py-8 px-4">
-      {/* Main Container */}
-      <div className="max-w-[1200px] mx-auto bg-[#dbe6c6] rounded-3xl shadow-lg p-6 md:p-10">
-        {/* Header */}
-        <header className="flex items-center justify-between mb-8 pb-4 border-b border-[#c5d4a8]">
-          <h2 className="text-xl font-bold text-gray-900">Obywatelski Portal</h2>
+    <div className="min-h-screen bg-neutral-100">
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 bg-white shadow-sm">
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
+          <img src={mPrawoLogo} alt="mPrawo" className="h-10" />
           
           {/* Right Side - Login/Profile */}
           <div className="flex items-center gap-3">
             {isLoggedIn ? (
               <>
                 {/* User Profile Chip */}
-                <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white shadow-sm hover:bg-gray-50 transition-colors">
+                <button className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#dc143c] text-white text-sm font-semibold">
                     A
                   </span>
@@ -108,7 +268,7 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
               /* Login Button */
               <button
                 onClick={onLoginClick}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-gray-300 bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#dc143c] hover:bg-[#b91234] text-sm font-medium text-white transition-colors"
               >
                 <svg
                   className="w-4 h-4"
@@ -127,10 +287,16 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
               </button>
             )}
           </div>
-        </header>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="py-8 px-4">
+      {/* Main Container */}
+      <div className="max-w-[1200px] mx-auto bg-gray-100 rounded-3xl shadow-lg p-6 md:p-10">
 
         {/* Main Content - Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[65%_35%] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Bills */}
           <section>
             {/* Filters and Search Row */}
@@ -169,18 +335,19 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
                   placeholder="Szukaj po nazwie ustawy..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#8fa869] focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all"
                 />
               </div>
             </div>
 
             {/* Bills List - Scrollable Container */}
-            <div className="max-h-80 overflow-y-auto pr-1">
+            <div className="md:max-h-52 overflow-y-auto pr-1">
               <div className="bg-white/60 rounded-2xl overflow-hidden divide-y divide-gray-200">
               {filteredBills.length > 0 ? (
                 filteredBills.map((bill) => (
                   <div
                     key={bill.id}
+                    onClick={() => onBillClick(bill)}
                     className="flex items-center justify-between p-4 hover:bg-white/80 cursor-pointer transition-colors"
                   >
                     <div className="flex-1 min-w-0">
@@ -218,13 +385,14 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
                 {preConsultations.map((item) => (
                   <div
                     key={item.id}
+                    onClick={() => onConsultationClick(item)}
                     className="bg-white/60 rounded-xl p-4 hover:bg-white/80 cursor-pointer transition-colors"
                   >
                     <h4 className="font-semibold text-gray-900 text-sm leading-snug">
                       {item.title}
                     </h4>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#e8edd9] text-gray-700 font-medium">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 font-medium">
                         {item.category}
                       </span>
                       <span className="text-gray-500">
@@ -243,7 +411,7 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
               </h3>
               <div className="bg-white/60 rounded-xl overflow-hidden">
                 {/* Table Header */}
-                <div className="hidden sm:grid grid-cols-3 gap-2 px-4 py-2 bg-white/40 text-xs font-bold text-gray-600 border-b border-gray-200">
+                <div className="hidden sm:grid grid-cols-[1fr_auto_auto] gap-4 px-4 py-2 bg-white/40 text-xs font-bold text-gray-600 border-b border-gray-200">
                   <span>Konsultacja</span>
                   <span>Branża</span>
                   <span>Do kiedy?</span>
@@ -253,15 +421,16 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
                   {consultations.map((item) => (
                     <div
                       key={item.id}
+                      onClick={() => onConsultationClick(item)}
                       className="p-4 hover:bg-white/80 cursor-pointer transition-colors"
                     >
                       {/* Desktop View */}
-                      <div className="hidden sm:grid grid-cols-3 gap-2 items-center text-sm">
-                        <span className="font-medium text-gray-900 truncate">
+                      <div className="hidden sm:grid grid-cols-[1fr_auto_auto] gap-4 items-center text-sm">
+                        <span className="font-medium text-gray-900 leading-snug">
                           {item.title}
                         </span>
-                        <span className="text-gray-600">{item.category}</span>
-                        <span className="font-bold text-gray-700">{item.deadline}</span>
+                        <span className="text-gray-600 whitespace-nowrap">{item.category}</span>
+                        <span className="font-bold text-gray-700 whitespace-nowrap">{item.deadline}</span>
                       </div>
                       {/* Mobile View */}
                       <div className="sm:hidden">
@@ -285,8 +454,9 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout }: Land
 
       {/* Footer */}
       <footer className="max-w-[1200px] mx-auto mt-6 px-4 text-center text-sm text-gray-500">
-        © 2025 Obywatelski Portal • HackNation 2025
+        © 2025 mPrawo • HackNation 2025
       </footer>
+      </main>
     </div>
   )
 }
