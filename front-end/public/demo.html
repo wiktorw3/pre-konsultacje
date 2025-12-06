@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Oś czasu procesu legislacji</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            color: #111827;
+        }
+    </style>
+    <link rel="stylesheet" href="Timeline.css">
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Ikony dla każdego etapu
+        const stageIcons = {
+            'Prekonsultacje': '💭',
+            'Projekt': '✏️',
+            'Konsultacje': '🗣️',
+            'Ustawa': '📄',
+            'Głosowanie w Sejmie': '🗳️',
+            'Głosowanie w Senacie': '⚖️',
+            'Decyzja Prezydenta': '✒️'
+        };
+
+        // Mapowanie etapów na klasy CSS (każdy etap ma swój kolor)
+        const stageClasses = {
+            'Prekonsultacje': 'timeline-stage--prekonsultacje',
+            'Projekt': 'timeline-stage--projekt',
+            'Konsultacje': 'timeline-stage--konsultacje',
+            'Ustawa': 'timeline-stage--ustawa',
+            'Głosowanie w Sejmie': 'timeline-stage--sejm',
+            'Głosowanie w Senacie': 'timeline-stage--senat',
+            'Decyzja Prezydenta': 'timeline-stage--prezydent'
+        };
+
+        const statusClasses = {
+            'preparing': 'timeline-stage--preparing',
+            'consultations': 'timeline-stage--consultations',
+            'passed': 'timeline-stage--passed',
+            'risks': 'timeline-stage--risks'
+        };
+
+        function getStatusLabel(status) {
+            const labels = {
+                'preparing': 'W przygotowaniu',
+                'consultations': 'W konsultacjach',
+                'passed': 'Uchwalona',
+                'risks': 'Ryzyka wdrożeniowe'
+            };
+            return labels[status] || 'Nieznany';
+        }
+
+        function Timeline({ data = [], onStageClick }) {
+            const [activeTooltip, setActiveTooltip] = useState(null);
+            const [selectedStage, setSelectedStage] = useState(null);
+            const modalRef = useRef(null);
+            const previousActiveElementRef = useRef(null);
+
+            const handleStageClick = (stage, event) => {
+                event.preventDefault();
+                previousActiveElementRef.current = document.activeElement;
+                setSelectedStage(stage);
+                if (onStageClick) {
+                    onStageClick(stage);
+                }
+            };
+
+            const handleKeyDown = (stage, event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleStageClick(stage, event);
+                }
+            };
+
+            const closeModal = () => {
+                setSelectedStage(null);
+                if (previousActiveElementRef.current) {
+                    previousActiveElementRef.current.focus();
+                }
+            };
+
+            const handleModalKeyDown = (event) => {
+                if (event.key === 'Escape') {
+                    closeModal();
+                }
+            };
+
+            useEffect(() => {
+                if (selectedStage && modalRef.current) {
+                    const closeButton = modalRef.current.querySelector('.timeline-modal-close');
+                    if (closeButton) {
+                        closeButton.focus();
+                    }
+                }
+            }, [selectedStage]);
+
+            const orderedStages = [
+                'Prekonsultacje',
+                'Projekt',
+                'Konsultacje',
+                'Ustawa',
+                'Głosowanie w Sejmie',
+                'Głosowanie w Senacie',
+                'Decyzja Prezydenta'
+            ];
+
+            const sortedData = orderedStages
+                .map(stageName => data.find(item => item.stage === stageName))
+                .filter(Boolean);
+
+            if (sortedData.length === 0) {
+                return (
+                    <div className="timeline-container" role="status" aria-live="polite">
+                        <p>Brak danych do wyświetlenia</p>
+                    </div>
+                );
+            }
+
+            return (
+                <>
+                    <div className="timeline-container" role="region" aria-label="Oś czasu procesu legislacji">
+                        <div className="timeline-line" aria-hidden="true"></div>
+                        <ol className="timeline-list" role="list">
+                            {sortedData.map((item, index) => {
+                                const stageClass = stageClasses[item.stage] || '';
+                                const isLast = index === sortedData.length - 1;
+                                const stageId = `stage-${index}`;
+
+                                return (
+                                    <li
+                                        key={item.stage}
+                                        className={`timeline-item ${isLast ? 'timeline-item--last' : ''}`}
+                                        role="listitem"
+                                    >
+                                        <button
+                                            className={`timeline-stage ${stageClass}`}
+                                            onClick={(e) => handleStageClick(item, e)}
+                                            onKeyDown={(e) => handleKeyDown(item, e)}
+                                            onMouseEnter={() => setActiveTooltip(index)}
+                                            onMouseLeave={() => setActiveTooltip(null)}
+                                            onFocus={() => setActiveTooltip(index)}
+                                            onBlur={() => setActiveTooltip(null)}
+                                            aria-label={`${item.stage}, status: ${getStatusLabel(item.status)}. Kliknij, aby zobaczyć szczegóły.`}
+                                            aria-describedby={`tooltip-${index}`}
+                                            id={stageId}
+                                        >
+                                            <span className="timeline-stage-icon" aria-hidden="true">
+                                                {stageIcons[item.stage] || '•'}
+                                            </span>
+                                            <span className="timeline-stage-label">{item.stage}</span>
+                                            <span className="timeline-stage-indicator" aria-hidden="true"></span>
+                                        </button>
+
+                                        {/* Tooltip - tylko opis w prostym języku */}
+                                        {activeTooltip === index && (item.osrSummary || item.description) && (
+                                            <div
+                                                id={`tooltip-${index}`}
+                                                className="timeline-tooltip"
+                                                role="tooltip"
+                                                aria-live="polite"
+                                            >
+                                                <p className="timeline-tooltip-description">
+                                                    {item.osrSummary || item.description}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        {/* Strzałka do następnego etapu */}
+                                        {!isLast && (
+                                            <div className="timeline-arrow" aria-hidden="true">
+                                                →
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
+                        </ol>
+                    </div>
+
+                    {selectedStage && (
+                        <div
+                            className="timeline-modal-overlay"
+                            onClick={closeModal}
+                            onKeyDown={handleModalKeyDown}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="modal-title"
+                        >
+                            <div
+                                ref={modalRef}
+                                className="timeline-modal"
+                                onClick={(e) => e.stopPropagation()}
+                                role="document"
+                            >
+                                <button
+                                    className="timeline-modal-close"
+                                    onClick={closeModal}
+                                    aria-label="Zamknij okno szczegółów"
+                                >
+                                    ×
+                                </button>
+                                <h2 id="modal-title" className="timeline-modal-title">
+                                    {selectedStage.stage}
+                                </h2>
+                                <div className="timeline-modal-content">
+                                    <div className="timeline-modal-section">
+                                        <h3>Status</h3>
+                                        <span className={`timeline-status-badge ${statusClasses[selectedStage.status]}`}>
+                                            {getStatusLabel(selectedStage.status)}
+                                        </span>
+                                    </div>
+                                    
+                                    {selectedStage.projectName && (
+                                        <div className="timeline-modal-section">
+                                            <h3>Nazwa projektu</h3>
+                                            <p>{selectedStage.projectName}</p>
+                                        </div>
+                                    )}
+
+                                    {selectedStage.ministry && (
+                                        <div className="timeline-modal-section">
+                                            <h3>Ministerstwo</h3>
+                                            <p>{selectedStage.ministry}</p>
+                                        </div>
+                                    )}
+
+                                    {selectedStage.osrSummary && (
+                                        <div className="timeline-modal-section">
+                                            <h3>Skrót OSR (w prostym języku)</h3>
+                                            <p>{selectedStage.osrSummary}</p>
+                                        </div>
+                                    )}
+
+                                    {selectedStage.description && (
+                                        <div className="timeline-modal-section">
+                                            <h3>Opis</h3>
+                                            <p>{selectedStage.description}</p>
+                                        </div>
+                                    )}
+
+                                    {selectedStage.link && (
+                                        <div className="timeline-modal-section">
+                                            <a
+                                                href={selectedStage.link}
+                                                className="timeline-modal-link"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Zobacz dokumenty →
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        // Przykładowe dane
+        const exampleTimelineData = [
+            {
+                stage: 'Prekonsultacje',
+                status: 'passed',
+                description: 'Etap wstępnych konsultacji społecznych i analiz.',
+                link: 'https://www.gov.pl/web/prekonsultacje',
+                projectName: 'Ustawa o wspieraniu innowacyjności',
+                ministry: 'Ministerstwo Rozwoju i Technologii',
+                osrSummary: 'Wstępny etap przygotowywania projektu ustawy. Każdy może zgłaszać pomysły i opinie, aby sprawdzić możliwe skutki zmian.'
+            },
+            {
+                stage: 'Projekt',
+                status: 'passed',
+                description: 'Przygotowanie projektu ustawy przez ministerstwo.',
+                link: 'https://www.gov.pl/web/dziennik-ustaw',
+                projectName: 'Ustawa o wspieraniu innowacyjności',
+                ministry: 'Ministerstwo Rozwoju i Technologii',
+                osrSummary: 'Tworzony jest oficjalny projekt ustawy. Zawiera treść przepisów, cele i uzasadnienie dla zmian.'
+            },
+            {
+                stage: 'Konsultacje',
+                status: 'consultations',
+                description: 'Publiczne konsultacje projektu ustawy - możliwość składania uwag.',
+                link: 'https://www.gov.pl/web/konsultacje-spoleczne',
+                projectName: 'Ustawa o wspieraniu innowacyjności',
+                ministry: 'Ministerstwo Rozwoju i Technologii',
+                osrSummary: 'Projekt ustawy jest udostępniany głównym interesariuszom – organizacjom, instytucjom i grupom, które są najbardziej związane z tematem ustawy. Mogą zgłaszać uwagi i sugestie zmian.'
+            },
+            {
+                stage: 'Ustawa',
+                status: 'consultations',
+                description: 'Projekt ustawy przekazany do dalszych prac legislacyjnych.',
+                link: 'https://www.sejm.gov.pl',
+                projectName: 'Ustawa o wspieraniu innowacyjności',
+                ministry: 'Ministerstwo Rozwoju i Technologii',
+                osrSummary: 'Projekt zostaje przyjęty przez rząd i oficjalnie skierowany do Sejmu jako projekt ustawy.'
+            },
+            {
+                stage: 'Głosowanie w Sejmie',
+                status: 'preparing',
+                description: 'Projekt ustawy w trakcie procedowania w Sejmie RP.',
+                link: 'https://www.sejm.gov.pl/Sejm9.nsf/agent.xsp?symbol=posglosowania',
+                projectName: 'Ustawa o wspieraniu innowacyjności',
+                ministry: 'Ministerstwo Rozwoju i Technologii',
+                osrSummary: 'Posłowie głosują nad projektem ustawy. Jeśli większość posłów go popiera, ustawa przechodzi do Senatu.'
+            },
+            {
+                stage: 'Głosowanie w Senacie',
+                status: 'preparing',
+                description: 'Ustawa po uchwaleniu przez Sejm trafia do Senatu.',
+                link: 'https://www.senat.gov.pl',
+                projectName: 'Ustawa o wspieraniu innowacyjności',
+                ministry: 'Ministerstwo Rozwoju i Technologii',
+                osrSummary: 'Senat może zaakceptować ustawę w całości, wprowadzić poprawki lub zgłosić uwagi. Poprawki Senatu wracają do Sejmu do ostatecznego rozpatrzenia.'
+            },
+            {
+                stage: 'Decyzja Prezydenta',
+                status: 'risks',
+                description: 'Ostatni etap - Prezydent podpisuje ustawę lub ją zawetuje.',
+                link: 'https://www.prezydent.pl',
+                projectName: 'Ustawa o wspieraniu innowacyjności',
+                ministry: 'Ministerstwo Rozwoju i Technologii',
+                osrSummary: 'Prezydent może: Podpisać ustawę, wtedy wchodzi w życie. Zawetować ustawę, wtedy wraca do Sejmu, który może odrzucić weto większością 3/5 głosów w obecności co najmniej połowy posłów. Zwrócić ustawę do Trybunału Konstytucyjnego w sprawie zgodności z konstytucją.'
+            }
+        ];
+
+        function App() {
+            const handleStageClick = (stage) => {
+                console.log('Kliknięto etap:', stage.stage);
+            };
+
+            return (
+                <div className="container">
+                    <h1>Oś czasu procesu legislacji</h1>
+                    <Timeline data={exampleTimelineData} onStageClick={handleStageClick} />
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
+
