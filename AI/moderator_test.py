@@ -4,12 +4,14 @@ import json
 import subprocess
 from pathlib import Path
 from openai import OpenAI
+from dotenv import load_dotenv
 
 # -------------------------------------------------------
 # KONFIGURACJA
 # -------------------------------------------------------
 
-OPENAI_API_KEY = "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"
+load_dotenv()  
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
