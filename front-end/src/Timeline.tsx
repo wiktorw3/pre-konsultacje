@@ -63,8 +63,9 @@ export default function Timeline({ data = [], selectedStage, onStageSelect }: Ti
   return (
     <div className="py-6 px-4" role="region" aria-label="Oś czasu procesu legislacji">
       <div className="max-w-[1400px] mx-auto">
-        <div className="flex items-center justify-center gap-1 md:gap-2 flex-wrap">
+        <div className="flex items-center justify-center gap-1 md:gap-2 flex-wrap relative">
           {sortedData.map((item, index) => {
+            const isFirst = index === 0
             const isLast = index === sortedData.length - 1
             const isSelected = selectedStage === item.stage
             const isClickable = item.stage === 'Prekonsultacje' || item.stage === 'Konsultacje'
@@ -92,17 +93,37 @@ export default function Timeline({ data = [], selectedStage, onStageSelect }: Ti
                     <span className="hidden sm:inline">{item.stage}</span>
                   </button>
 
-                  {/* Tooltip */}
+                  {/* Tooltip - inteligentne pozycjonowanie */}
                   {activeTooltip === index && item.description && (
                     <div
-                      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 bg-gray-900 text-white px-4 py-3 rounded-lg text-sm max-w-xs w-max shadow-lg"
+                      className={`absolute z-50 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg ${
+                        isFirst
+                          ? 'top-full left-0 mt-2' // Dla pierwszego (Pomysł) - szeroki, poziomy
+                          : isLast
+                          ? 'top-full right-0 mt-2' // Dla ostatniego (Prezydent) - szeroki, poziomy
+                          : 'top-full left-1/2 -translate-x-1/2 mt-2' // Dla środkowych - szeroki, poziomy
+                      }`}
+                      style={{
+                        maxWidth: 'min(1200px, 95vw)',
+                        minWidth: '400px',
+                        width: 'auto'
+                      }}
                       role="tooltip"
                     >
-                      <p className="font-semibold mb-1">{item.stage}</p>
-                      <p className="text-gray-300 text-xs leading-relaxed">
+                      <p className="font-semibold mb-1.5 text-sm">{item.stage}</p>
+                      <p className="text-gray-300 text-sm leading-normal break-words">
                         {item.description}
                       </p>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-8 border-transparent border-b-gray-900"></div>
+                      {/* Strzałka wskazująca na przycisk */}
+                      <div
+                        className={`absolute bottom-full border-8 border-transparent border-b-gray-900 ${
+                          isFirst
+                            ? 'left-4' // Strzałka po lewej dla pierwszego
+                            : isLast
+                            ? 'right-4' // Strzałka po prawej dla ostatniego
+                            : 'left-1/2 -translate-x-1/2' // Strzałka wyśrodkowana dla środkowych
+                        }`}
+                      ></div>
                     </div>
                   )}
                 </div>
@@ -125,41 +146,41 @@ export const exampleTimelineData = [
   {
     stage: 'Pomysł',
     status: 'passed' as const,
-    description: 'Początkowy etap, gdzie powstają pomysły na nowe przepisy.'
+    description: 'Etap, w którym pojawia się potrzeba zmiany prawa oraz wstępne kierunki regulacji.'
   },
   {
     stage: 'Prekonsultacje',
     status: 'passed' as const,
-    description: 'Wstępny etap konsultacji. Każdy może zgłaszać pomysły i opinie.'
+    description: 'Wczesne zbieranie opinii i sygnałów przed stworzeniem projektu ustawy.'
   },
   {
     stage: 'Projekt',
     status: 'passed' as const,
-    description: 'Tworzony jest oficjalny projekt ustawy.'
+    description: 'Wypracowany projekt ustawy przygotowany przez uprawniony podmiot.'
   },
   {
     stage: 'Konsultacje',
     status: 'consultations' as const,
-    description: 'Projekt udostępniany publicznie. Można zgłaszać uwagi.'
+    description: 'Projekt kierowany do konsultacji publicznych i uzgodnień — można zgłaszać uwagi.'
   },
   {
     stage: 'Ustawa',
     status: 'consultations' as const,
-    description: 'Projekt przyjęty przez rząd i skierowany do Sejmu.'
+    description: 'Projekt ustawy zostaje formalnie wniesiony do Sejmu przez uprawniony podmiot.'
   },
   {
     stage: 'Sejm',
     status: 'preparing' as const,
-    description: 'Posłowie głosują nad projektem.'
+    description: 'Sejm przeprowadza czytania, debatę, poprawki i głosowania. Może projekt przyjąć, zmienić lub odrzucić.'
   },
   {
     stage: 'Senat',
     status: 'preparing' as const,
-    description: 'Senat może zaakceptować lub wprowadzić poprawki.'
+    description: 'Senat może ustawę przyjąć, wprowadzić poprawki lub odrzucić.'
   },
   {
     stage: 'Prezydent',
     status: 'preparing' as const,
-    description: 'Prezydent może podpisać lub zawetować ustawę.'
+    description: 'Prezydent może ustawę podpisać, zawetować lub skierować ją do Trybunału Konstytucyjnego.'
   }
 ]

@@ -438,11 +438,11 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
                 <h4 className="font-semibold text-gray-900 text-sm leading-snug">
                   {item.title}
                 </h4>
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                <div className="mt-2 flex items-center gap-2 text-xs">
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-900 text-white font-medium">
                     {item.category}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-gray-500 whitespace-nowrap">
                     Do kiedy: <span className="font-bold text-gray-700">{item.deadline}</span>
                   </span>
                 </div>

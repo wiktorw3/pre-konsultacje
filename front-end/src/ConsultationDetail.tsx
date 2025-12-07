@@ -5,9 +5,10 @@ interface ConsultationDetailProps {
   item: Consultation
   isLoggedIn: boolean
   onBack: () => void
+  onLoginClick?: () => void
 }
 
-export default function ConsultationDetail({ item, isLoggedIn, onBack }: ConsultationDetailProps) {
+export default function ConsultationDetail({ item, isLoggedIn, onBack, onLoginClick }: ConsultationDetailProps) {
   const isPreConsultation = item.type === 'pre'
   
   // Comments state for pre-consultations
@@ -160,9 +161,8 @@ export default function ConsultationDetail({ item, isLoggedIn, onBack }: Consult
           </div>
         </section>
 
-        {/* Conditional Section: Comments for Pre-konsultacje OR CTA for Otwarte konsultacje */}
-        {isPreConsultation ? (
-          /* Comments Section for Pre-konsultacje */
+        {/* Comments Section for Pre-konsultacje only */}
+        {isPreConsultation && (
           <section>
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Komentarze</h2>
             
@@ -197,27 +197,17 @@ export default function ConsultationDetail({ item, isLoggedIn, onBack }: Consult
               </div>
             ) : (
               <div className="bg-white/40 rounded-xl px-4 py-3 text-center">
-                <p className="text-sm text-gray-600">
-                  Aby dodać komentarz, <span className="font-semibold">zaloguj się</span>.
+                <p className="text-sm text-gray-600 mb-3">
+                  Aby dodać komentarz, zaloguj się.
                 </p>
+                <button
+                  onClick={onLoginClick}
+                  className="inline-flex items-center justify-center rounded-full bg-[#dc143c] hover:bg-[#b91234] px-6 py-2.5 text-sm font-semibold text-white transition-colors shadow-sm"
+                >
+                  Zaloguj się
+                </button>
               </div>
             )}
-          </section>
-        ) : (
-          /* CTA Button for Otwarte konsultacje */
-          <section className="text-center">
-            <a
-              href="#"
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
-            >
-              Przejdź do formularza konsultacji
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-              </svg>
-            </a>
-            <p className="mt-3 text-xs text-gray-500">
-              Po kliknięciu nastąpi przejście do oficjalnego formularza konsultacyjnego.
-            </p>
           </section>
         )}
       </div>

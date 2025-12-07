@@ -53,7 +53,8 @@ function App() {
         <ConsultationDetail 
           item={selectedConsultation} 
           isLoggedIn={isLoggedIn}
-          onBack={handleBack} 
+          onBack={handleBack}
+          onLoginClick={handleLoginClick}
         />
       ) : (
         <LandingPage
