@@ -1,4 +1,4 @@
-# 🚀 Projekt PRE-KONSULTACJE
+# 🚀 Projekt mPrawo - backend
 
 Projekt **PRE-KONSULTACJE** to platforma do zarządzania sesjami pre konsultacji, mająca na celu usprawnienie komunikacji między użytkownikami a ekspertami. Kluczowym elementem jest możliwość dodawania komentarzy oraz ich **automatyczna walidacja i moderacja** przy użyciu usług AI.
 
