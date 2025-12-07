@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Consultation } from './types'
 
 interface ConsultationDetailProps {
@@ -10,6 +10,70 @@ interface ConsultationDetailProps {
 
 export default function ConsultationDetail({ item, isLoggedIn, onBack, onLoginClick }: ConsultationDetailProps) {
   const isPreConsultation = item.type === 'pre'
+  
+  // Likes state - load from localStorage
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
+  
+  useEffect(() => {
+    // Load liked status
+    try {
+      const stored = localStorage.getItem('liked-pre-consultations')
+      if (stored) {
+        const likedIds = JSON.parse(stored) as number[]
+        setIsLiked(likedIds.includes(item.id))
+      }
+    } catch (error) {
+      console.warn('Failed to load liked status:', error)
+    }
+    
+    // Load like count
+    try {
+      const storedCounts = localStorage.getItem('pre-consultation-like-counts')
+      if (storedCounts) {
+        const counts = JSON.parse(storedCounts) as Record<number, number>
+        setLikeCount(counts[item.id] || 0)
+      }
+    } catch (error) {
+      console.warn('Failed to load like count:', error)
+    }
+  }, [item.id])
+  
+  const toggleLike = () => {
+    if (!isLoggedIn || !isPreConsultation) {
+      return
+    }
+    
+    // Sprawdź aktualny stan z localStorage (źródło prawdy)
+    try {
+      const stored = localStorage.getItem('liked-pre-consultations')
+      const likedIds = stored ? (JSON.parse(stored) as number[]) : []
+      const wasLiked = likedIds.includes(item.id)
+      const newIsLiked = !wasLiked
+      
+      // Update liked list in localStorage
+      const newLikedIds = newIsLiked 
+        ? [...likedIds.filter(id => id !== item.id), item.id] // Usuń duplikaty i dodaj
+        : likedIds.filter(id => id !== item.id)
+      localStorage.setItem('liked-pre-consultations', JSON.stringify(newLikedIds))
+      
+      // Update like count - sprawdzamy STARY stan (wasLiked)
+      const storedCounts = localStorage.getItem('pre-consultation-like-counts')
+      const counts = storedCounts ? (JSON.parse(storedCounts) as Record<number, number>) : {}
+      const currentCount = counts[item.id] || 0
+      const newCount = currentCount + (wasLiked ? -1 : 1)
+      const finalCount = Math.max(0, newCount)
+      
+      counts[item.id] = finalCount
+      localStorage.setItem('pre-consultation-like-counts', JSON.stringify(counts))
+      
+      // Update state
+      setIsLiked(newIsLiked)
+      setLikeCount(finalCount)
+    } catch (error) {
+      console.warn('Failed to toggle like:', error)
+    }
+  }
   
   // Comments state for pre-consultations
   const [comments, setComments] = useState<string[]>([
@@ -46,7 +110,7 @@ export default function ConsultationDetail({ item, isLoggedIn, onBack, onLoginCl
         {/* Header - Title, Category, Deadline */}
         <header className="mb-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
+            <div className="flex-1">
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-2 ${
                 isPreConsultation 
                   ? 'bg-amber-100 text-amber-800' 
@@ -54,9 +118,47 @@ export default function ConsultationDetail({ item, isLoggedIn, onBack, onLoginCl
               }`}>
                 {isPreConsultation ? 'Pre-konsultacje' : 'Otwarte konsultacje'}
               </span>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">
-                {item.title}
-              </h1>
+              <div className="flex items-start gap-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mt-1 flex-1">
+                  {item.title}
+                </h1>
+                {/* Like button and counter - tylko dla prekonsultacji */}
+                {isPreConsultation && (
+                  <div className="mt-1">
+                    {isLoggedIn ? (
+                      <button
+                        onClick={toggleLike}
+                        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                        aria-label={isLiked ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
+                        type="button"
+                      >
+                        <svg
+                          className={`w-6 h-6 transition-colors ${isLiked ? 'text-red-500 fill-current' : 'text-gray-400'}`}
+                          fill={isLiked ? 'currentColor' : 'none'}
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                          />
+                        </svg>
+                        <span className="text-base font-medium">{likeCount}</span>
+                      </button>
+                    ) : (
+                      <span className="inline-flex items-center gap-2 text-gray-600">
+                        <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span className="text-base font-medium">{likeCount}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
               <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
                 <span className="text-gray-600">
                   Branża: <span className="font-semibold text-gray-900">{item.category}</span>

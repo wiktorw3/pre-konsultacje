@@ -9,7 +9,6 @@ import {
   DEFAULT_SETTINGS,
 } from './types';
 import { speakText, stopTTS, getTextForTTS } from './tts';
-import { speakText, stopTTS, getTextForTTS } from './tts';
 
 const STORAGE_KEY = 'accessibility-settings';
 

@@ -10,9 +10,11 @@ export interface Bill {
   status: BillStatus
   type: BillType
   summary: string
-  goals: string
-  assumptions: string
-  impacts: string
+  goals: string[]
+  assumptions: string[]
+  impacts: string[]
+  zwolennicy: string[]
+  przeciwnicy: string[]
   timelineSteps: string[]
 }
 

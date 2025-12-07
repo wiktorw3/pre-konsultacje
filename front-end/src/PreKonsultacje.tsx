@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Bill, BillStatus, Consultation } from './types'
 import mPrawoLogo from './assets/mPrawo-logo3.png'
 import Timeline, { exampleTimelineData } from './Timeline'
@@ -13,114 +13,136 @@ interface LandingPageProps {
 
 // Mock Data with extended fields
 export const bills: Bill[] = [
-  { 
-    id: 1, 
-    name: 'Ustawa o Kryptowalutach', 
-    date: '4.12.2025', 
-    status: 'Weto Prezydenta', 
+  {
+    id: 1,
+    name: 'Ustawa o rynku kryptoaktywów',
+    date: '05.12.2025',
+    status: 'Weto Prezydenta',
     type: 'ustawa',
-    summary: 'Ustawa regulująca obrót kryptowalutami w Polsce, wprowadzająca wymogi licencyjne dla giełd oraz zasady opodatkowania zysków z handlu cyfrowymi aktywami.',
-    goals: 'Uregulowanie rynku kryptowalut i ochrona inwestorów',
-    assumptions: 'Licencjonowanie giełd, KYC/AML, podatek 19%',
-    impacts: 'Wzrost bezpieczeństwa inwestorów, nowe wpływy podatkowe',
-    timelineSteps: ['Weto Prezydenta', 'Głosowanie w Senacie', 'Głosowanie w Sejmie', 'Inicjatywa ustawodawcza']
+    summary: 'Wdrożenie unijnego rozporządzenia MiCA, regulującego rynek kryptoaktywów w Polsce zgodnie ze standardami UE.',
+    goals: [
+      'Wdrożenie MiCA i ujednolicenie zasad w UE',
+      'Ochrona inwestorów przed scamami i oszustwami',
+      'Zwiększenie nadzoru nad rynkiem kryptoaktywów'
+    ],
+    assumptions: [
+      'Licencjonowanie dostawców usług krypto przez KNF',
+      'Pełne KYC/AML i obowiązki raportowania',
+      'Kary do 20 mln zł lub 5% obrotu'
+    ],
+    impacts: [
+      'Opóźnienie regulacji = dalsze ryzyko scamów',
+      'Dominacja giełd z licencjami zagranicznymi',
+      'Osłabienie narzędzi AML i walki z praniem pieniędzy'
+    ],
+    zwolennicy: ['Rząd KO+Lewica', 'KNF', 'Ministerstwo Finansów'],
+    przeciwnicy: ['Prezydent Karol Nawrocki', 'Konfederacja', 'Część społeczności krypto'],
+    timelineSteps: ['Weto Prezydenta podtrzymane', 'Głosowanie w Sejmie', 'Senat', 'Inicjatywa']
   },
-  { 
-    id: 2, 
-    name: 'Ustawa o Ochronie Środowiska', 
-    date: '3.12.2025', 
-    status: 'Podpisana', 
+  {
+    id: 2,
+    name: 'Ustawa budżetowa na rok 2026',
+    date: '05.12.2025',
+    status: 'W Sejmie',
     type: 'ustawa',
-    summary: 'Kompleksowa ustawa wzmacniająca ochronę środowiska naturalnego poprzez zaostrzenie norm emisji i wprowadzenie nowych obszarów chronionych.',
-    goals: 'Redukcja emisji CO2 o 40% do 2030 roku',
-    assumptions: 'Nowe normy emisji, rozszerzenie parków narodowych',
-    impacts: 'Poprawa jakości powietrza, ochrona bioróżnorodności',
-    timelineSteps: ['Podpisana', 'Głosowanie w Senacie', 'Głosowanie w Sejmie', 'Inicjatywa ustawodawcza']
+    summary: 'Ustawa budżetowa z planowanym deficytem 271,7 mld zł, określająca dochody i wydatki państwa na rok 2026.',
+    goals: [
+      'Stymulowanie gospodarki po stagnacji',
+      'Finansowanie kluczowych inwestycji i obronności',
+      'Zwiększenie wpływów z VAT i akcyzy'
+    ],
+    assumptions: [
+      'Dochody budżetu: 647,2 mld zł',
+      'Wydatki: 918,9 mld zł',
+      'Deficyt: 271,7 mld zł'
+    ],
+    impacts: [
+      'Rekordowy deficyt i wzrost długu publicznego',
+      'Wyższe wydatki na 800+ i służbę zdrowia',
+      'Ryzyko inflacji w 2026 r.'
+    ],
+    zwolennicy: ['Koalicja rządząca', 'Ministerstwo Finansów', 'Związki zawodowe'],
+    przeciwnicy: ['Opozycja (PiS, Konfederacja)', 'Ekonomiści ostrzegający przed przegrzaniem'],
+    timelineSteps: ['Skierowana do Senatu', 'Głosowanie w Sejmie', 'Inicjatywa']
   },
-  { 
-    id: 3, 
-    name: 'Ustawa o Sztucznej Inteligencji', 
-    date: '2.12.2025', 
-    status: 'W Senacie', 
+  {
+    id: 3,
+    name: 'Ustawa o zmianie ustawy – Prawo o ruchu drogowym oraz niektórych innych ustaw',
+    date: '02.12.2025',
+    status: 'Podpisana',
     type: 'ustawa',
-    summary: 'Ustawa określająca ramy prawne dla rozwoju i stosowania systemów sztucznej inteligencji w Polsce, zgodna z regulacjami UE.',
-    goals: 'Bezpieczny rozwój AI z poszanowaniem praw człowieka',
-    assumptions: 'Klasyfikacja ryzyka AI, wymogi transparentności',
-    impacts: 'Zwiększenie innowacyjności, ochrona przed nadużyciami',
-    timelineSteps: ['W Senacie', 'Głosowanie w Sejmie', 'Inicjatywa ustawodawcza']
+    summary: 'Zaostrzenie kar za przekroczenie prędkości, umożliwienie uzyskania prawa jazdy od 17 lat oraz obowiązkowy kask dla rowerzystów poniżej 18 roku życia.',
+    goals: [
+      'Zwiększenie bezpieczeństwa na drogach',
+      'Ułatwienie mobilności młodych kierowców',
+      'Redukcja biurokracji w rejestracji pojazdów'
+    ],
+    assumptions: [
+      'Zatrzymanie prawa jazdy za +50 km/h w terenie zabudowanym',
+      'Prawo jazdy kat. B od 17 lat (z opiekunem)',
+      'Rejestracja pojazdu online'
+    ],
+    impacts: [
+      'Mniej śmiertelnych wypadków',
+      'Łatwiejszy dostęp do prawa jazdy dla młodzieży',
+      'Mniej kolejek w wydziałach komunikacji'
+    ],
+    zwolennicy: ['Prezydent Karol Nawrocki', 'Ministerstwo Infrastruktury', 'Policja drogowa'],
+    przeciwnicy: ['Kierowcy (surowsze kary)', 'Rodzice rowerzystów'],
+    timelineSteps: ['Podpisana', 'Senat', 'Sejm', 'Inicjatywa']
   },
-  { 
-    id: 4, 
-    name: 'Ustawa o Cyfryzacji Urzędów', 
-    date: '1.12.2025', 
-    status: 'W Sejmie', 
+  {
+    id: 4,
+    name: 'Poselski projekt ustawy o zmianie ustawy o ochronie przyrody',
+    date: '04.12.2025',
+    status: 'Złożona',
     type: 'ustawa',
-    summary: 'Ustawa wprowadzająca obowiązek cyfryzacji wszystkich usług administracji publicznej do 2027 roku.',
-    goals: 'Pełna cyfryzacja usług publicznych',
-    assumptions: 'e-Usługi, cyfrowa tożsamość, interoperacyjność',
-    impacts: 'Oszczędność czasu obywateli, redukcja kosztów administracji',
-    timelineSteps: ['W Sejmie', 'Inicjatywa ustawodawcza']
+    summary: 'Uproszczenie procedur wycinki drzew oraz poszerzenie katalogu gatunków inwazyjnych i łownych.',
+    goals: [
+      'Przyspieszenie inwestycji i decyzji administracyjnych',
+      'Aktualizacja listy gatunków chronionych',
+      'Ułatwienia dla samorządów i inwestorów'
+    ],
+    assumptions: [
+      'Skrócenie terminu sprzeciwu do wycinki do 35 dni',
+      'Dodanie kormorana, żurawia i bobra do gatunków łownych',
+      'Zmiany w zarządzeniach parków narodowych'
+    ],
+    impacts: [
+      'Szybsze realizacje inwestycji infrastrukturalnych',
+      'Kontrowersje ekologiczne i protesty organizacji',
+      'Ryzyko utraty bioróżnorodności'
+    ],
+    zwolennicy: ['Konfederacja', 'Samorządy', 'Przedsiębiorcy budowlani'],
+    przeciwnicy: ['Organizacje ekologiczne', 'Fundacja PRIMUM', 'Ministerstwo Klimatu'],
+    timelineSteps: ['Złożona', 'Inicjatywa']
   },
-  { 
-    id: 5, 
-    name: 'Ustawa o Odnawialnych Źródłach Energii', 
-    date: '30.11.2025', 
-    status: 'Złożona', 
+  {
+    id: 5,
+    name: 'Ustawa o szczególnych rozwiązaniach służących wsparciu górnictwa węgla kamiennego',
+    date: '05.12.2025',
+    status: 'W Sejmie',
     type: 'ustawa',
-    summary: 'Nowelizacja ustawy OZE wprowadzająca nowe mechanizmy wsparcia dla prosumentów i spółdzielni energetycznych.',
-    goals: '50% energii z OZE do 2030 roku',
-    assumptions: 'Wyższe taryfy gwarantowane, ulgi dla prosumentów',
-    impacts: 'Rozwój energetyki rozproszonej, niższe rachunki',
-    timelineSteps: ['Złożona', 'Inicjatywa ustawodawcza']
-  },
-  { 
-    id: 6, 
-    name: 'Projekt Reformy Edukacji', 
-    date: '4.12.2025', 
-    status: 'W Sejmie', 
-    type: 'projekt',
-    summary: 'Projekt zakładający modernizację systemu edukacji z naciskiem na kompetencje cyfrowe i krytyczne myślenie.',
-    goals: 'Nowoczesna edukacja przygotowująca do wyzwań XXI wieku',
-    assumptions: 'Nowa podstawa programowa, szkolenia nauczycieli',
-    impacts: 'Lepsze przygotowanie uczniów do rynku pracy',
-    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
-  },
-  { 
-    id: 7, 
-    name: 'Projekt Ustawy o E-Zdrowiu', 
-    date: '3.12.2025', 
-    status: 'Złożona', 
-    type: 'projekt',
-    summary: 'Projekt rozszerzający funkcjonalność Internetowego Konta Pacjenta i wprowadzający telemedycynę jako standard.',
-    goals: 'Powszechny dostęp do usług telemedycznych',
-    assumptions: 'Rozbudowa IKP, refundacja teleporad',
-    impacts: 'Łatwiejszy dostęp do lekarzy, krótsze kolejki',
-    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
-  },
-  { 
-    id: 8, 
-    name: 'Projekt Zmian w Kodeksie Pracy', 
-    date: '2.12.2025', 
-    status: 'W Senacie', 
-    type: 'projekt',
-    summary: 'Projekt wprowadzający 4-dniowy tydzień pracy jako opcję dla pracodawców i pracowników.',
-    goals: 'Poprawa work-life balance Polaków',
-    assumptions: 'Dobrowolność, zachowanie wynagrodzenia',
-    impacts: 'Wyższa produktywność, lepsze zdrowie pracowników',
-    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
-  },
-  { 
-    id: 9, 
-    name: 'Projekt Ustawy o Transporcie Publicznym', 
-    date: '1.12.2025', 
-    status: 'W Sejmie', 
-    type: 'projekt',
-    summary: 'Projekt zakładający integrację biletową w całym kraju i rozwój zeroemisyjnego transportu publicznego.',
-    goals: 'Jeden bilet na cały transport publiczny w Polsce',
-    assumptions: 'Wspólny system biletowy, dotacje na autobusy EV',
-    impacts: 'Wygodniejsze podróżowanie, czystsze powietrze',
-    timelineSteps: ['Projekt', 'Pre-konsultacje', 'Pomysł']
-  },
+    summary: 'Ustawa umożliwiająca dalsze wsparcie dla PGG i JSW oraz likwidację nierentownych kopalń z osłonami dla górników.',
+    goals: [
+      'Kontrolowana likwidacja kopalń do 2030-2034',
+      'Ochrona miejsc pracy i transformacja Śląska',
+      'Zakończenie dopłat bieżących do strat'
+    ],
+    assumptions: [
+      'Finansowanie likwidacji z budżetu państwa',
+      'Osłony socjalne i przekwalifikowania',
+      'Rekultywacja terenów poprzemysłowych'
+    ],
+    impacts: [
+      'Koszty dla budżetu rzędu kilkudziesięciu mld zł',
+      'Nowe miejsca pracy w zielonej energetyce',
+      'Końcowy etap odchodzenia od węgla'
+    ],
+    zwolennicy: ['Związki zawodowe (Solidarność, Kadra)', 'Prezydent Karol Nawrocki', 'Rząd'],
+    przeciwnicy: ['Organizacje ekologiczne', 'Część ekonomistów', 'Mieszkańcy obawiający się utraty pracy'],
+    timelineSteps: ['Skierowana do Senatu', 'Głosowanie w Sejmie', 'Inicjatywa']
+  }
 ]
 
 export const preConsultations: Consultation[] = [
@@ -241,14 +263,15 @@ export const consultations: Consultation[] = [
 const getStatusStyles = (status: BillStatus): string => {
   switch (status) {
     case 'Weto Prezydenta':
-      return 'bg-[#e5572f] text-white'
+      return 'bg-[#dc143c] text-white'
     case 'Podpisana':
       return 'bg-[#3c9d5b] text-white'
     case 'W Senacie':
     case 'W Sejmie':
     case 'Złożona':
+      return 'bg-gray-900 text-white'
     default:
-      return 'bg-[#f1f1f1] text-gray-800'
+      return 'bg-gray-900 text-white'
   }
 }
 
@@ -276,15 +299,15 @@ const getCompletedStages = (status: BillStatus): number => {
 const getCurrentStageName = (status: BillStatus): string => {
   switch (status) {
     case 'Złożona':
-      return 'Złożona'
+      return 'Skierowana do Sejmu'
     case 'W Sejmie':
-      return 'Przyjęta w Sejmie'
+      return 'Skierowana do Senatu'
     case 'W Senacie':
-      return 'Przyjęta w Senacie'
+      return 'Skierowana do Prezydenta'
     case 'Podpisana':
-      return 'Podpisana'
+      return 'Podpisana przez Prezydenta'
     case 'Weto Prezydenta':
-      return 'Weto'
+      return 'Prezydenckie Weto'
     default:
       return status
   }
@@ -295,24 +318,31 @@ const BillTrain = ({ status }: { status: BillStatus }) => {
   const completedStages = getCompletedStages(status)
   const isVetoed = status === 'Weto Prezydenta'
   const isSigned = status === 'Podpisana'
+  const isInProgress = !isVetoed && !isSigned
+  
+  // Destination stage index (where the bill is heading to)
+  const destinationStageIndex = completedStages
   
   return (
     <div className="flex items-center flex-wrap gap-y-1">
       {allStages.map((stage, index) => {
         const isCompleted = index < completedStages
+        const isDestination = index === destinationStageIndex && isInProgress
         const isLast = index === allStages.length - 1
         
         // Determine colors
         let bgColor = 'bg-gray-100 text-gray-400'
         
         if (isCompleted) {
+          // Completed stages
           if (isLast && isVetoed) {
-            bgColor = 'bg-red-500 text-white'
-          } else if (isLast && isSigned) {
-            bgColor = 'bg-green-500 text-white'
+            bgColor = 'bg-[#dc143c] text-white'
           } else {
             bgColor = 'bg-green-500 text-white'
           }
+        } else if (isDestination) {
+          // Destination stage (where bill is heading) is black
+          bgColor = 'bg-gray-900 text-white'
         }
         
         return (
@@ -340,6 +370,74 @@ const BillTrain = ({ status }: { status: BillStatus }) => {
 export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBillClick, onConsultationClick }: LandingPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [consultationType, setConsultationType] = useState<'Prekonsultacje' | 'Konsultacje'>('Prekonsultacje')
+  
+  // Likes state - load from localStorage
+  const [likedPreConsultations, setLikedPreConsultations] = useState<Set<number>>(new Set())
+  const [likeCounts, setLikeCounts] = useState<Record<number, number>>({})
+  
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('liked-pre-consultations')
+      if (stored) {
+        const likedIds = JSON.parse(stored) as number[]
+        setLikedPreConsultations(new Set(likedIds))
+      }
+      
+      // Load like counts
+      const storedCounts = localStorage.getItem('pre-consultation-like-counts')
+      if (storedCounts) {
+        setLikeCounts(JSON.parse(storedCounts))
+      } else {
+        // Initialize with default counts (0) for all pre-consultations
+        const initialCounts: Record<number, number> = {}
+        preConsultations.forEach(consultation => {
+          initialCounts[consultation.id] = 0
+        })
+        setLikeCounts(initialCounts)
+        localStorage.setItem('pre-consultation-like-counts', JSON.stringify(initialCounts))
+      }
+    } catch (error) {
+      console.warn('Failed to load liked pre-consultations:', error)
+    }
+  }, [])
+  
+  const toggleLike = (consultationId: number, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent opening consultation details
+    
+    if (!isLoggedIn) {
+      return // Don't allow liking if not logged in
+    }
+    
+    // Sprawdź aktualny stan z localStorage (źródło prawdy) - zapobiega podwójnemu kliknięciu
+    try {
+      const stored = localStorage.getItem('liked-pre-consultations')
+      const likedIds = stored ? (JSON.parse(stored) as number[]) : []
+      const wasLiked = likedIds.includes(consultationId)
+      const newIsLiked = !wasLiked
+      
+      // Update liked list in localStorage
+      const newLikedIds = newIsLiked 
+        ? [...likedIds.filter(id => id !== consultationId), consultationId] // Usuń duplikaty i dodaj
+        : likedIds.filter(id => id !== consultationId)
+      localStorage.setItem('liked-pre-consultations', JSON.stringify(Array.from(new Set(newLikedIds))))
+      
+      // Update like count - sprawdzamy STARY stan (wasLiked)
+      const storedCounts = localStorage.getItem('pre-consultation-like-counts')
+      const counts = storedCounts ? (JSON.parse(storedCounts) as Record<number, number>) : {}
+      const currentCount = counts[consultationId] || 0
+      const newCount = currentCount + (wasLiked ? -1 : 1)
+      const finalCount = Math.max(0, newCount)
+      
+      counts[consultationId] = finalCount
+      localStorage.setItem('pre-consultation-like-counts', JSON.stringify(counts))
+      
+      // Update state
+      setLikedPreConsultations(new Set(newLikedIds))
+      setLikeCounts({ ...counts })
+    } catch (error) {
+      console.warn('Failed to toggle like:', error)
+    }
+  }
 
   // Filter bills (only ustawy) based on search query
   const filteredBills = bills.filter((bill) => {
@@ -429,25 +527,71 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
 
           {/* List - Horizontal Scroll on Mobile */}
           <div className="flex gap-3 overflow-x-auto pb-2">
-            {(consultationType === 'Prekonsultacje' ? preConsultations : consultations).map((item) => (
-              <div
-                key={item.id}
-                onClick={() => onConsultationClick(item)}
-                className="flex-shrink-0 w-64 bg-white rounded-xl p-4 hover:bg-gray-50 cursor-pointer transition-colors border border-gray-200 shadow-sm"
-              >
-                <h4 className="font-semibold text-gray-900 text-sm leading-snug">
-                  {item.title}
-                </h4>
-                <div className="mt-2 flex items-center gap-2 text-xs">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-900 text-white font-medium">
-                    {item.category}
-                  </span>
-                  <span className="text-gray-500 whitespace-nowrap">
-                    Do kiedy: <span className="font-bold text-gray-700">{item.deadline}</span>
-                  </span>
+            {(consultationType === 'Prekonsultacje' ? preConsultations : consultations).map((item) => {
+              const isLiked = consultationType === 'Prekonsultacje' && likedPreConsultations.has(item.id)
+              const likeCount = consultationType === 'Prekonsultacje' ? (likeCounts[item.id] || 0) : 0
+              
+              return (
+                <div
+                  key={item.id}
+                  className="flex-shrink-0 w-64 bg-white rounded-xl p-4 hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm"
+                >
+                  <div
+                    onClick={() => onConsultationClick(item)}
+                    className="cursor-pointer"
+                  >
+                    <h4 className="font-semibold text-gray-900 text-sm leading-snug">
+                      {item.title}
+                    </h4>
+                    <div className="mt-2 flex items-center gap-2 text-xs">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-900 text-white font-medium">
+                        {item.category}
+                      </span>
+                      <span className="text-gray-500 whitespace-nowrap">
+                        Do kiedy: <span className="font-bold text-gray-700">{item.deadline}</span>
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Like counter/button - zawsze widoczny, klikalny tylko dla zalogowanych, poniżej po prawej */}
+                  {consultationType === 'Prekonsultacje' && (
+                    <div className="mt-2 flex justify-end">
+                      {isLoggedIn ? (
+                        <button
+                          onClick={(e) => toggleLike(item.id, e)}
+                          className="inline-flex items-center gap-1 text-gray-600 bg-white/80 rounded-full px-2 py-1 shadow-sm hover:bg-white transition-colors"
+                          aria-label={isLiked ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
+                          type="button"
+                        >
+                          <svg 
+                            className={`w-4 h-4 transition-colors ${isLiked ? 'text-red-500 fill-current' : 'text-gray-400'}`}
+                            fill={isLiked ? 'currentColor' : 'none'}
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                          </svg>
+                          <span className="text-xs font-medium">{likeCount}</span>
+                        </button>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-gray-600 bg-white/80 rounded-full px-2 py-1 shadow-sm">
+                          <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                          <span className="text-xs font-medium">{likeCount}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
@@ -460,24 +604,24 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
         {/* Tagline and Search Row */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
           <p className="text-sm text-gray-600 flex-shrink-0">
-            Poznaj przebieg prac legislacyjnych - wybierz ustawę, aby zobaczyć szczegóły.
+            Poznaj przebieg prac legislacyjnych - wybierz ustawę, aby zobaczyć szczegóły
           </p>
-          {/* Search Input */}
+              {/* Search Input */}
           <div className="relative w-full sm:w-auto sm:min-w-[320px]">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              🔍
-            </span>
-            <input
-              type="text"
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  🔍
+                </span>
+                <input
+                  type="text"
               placeholder="Szukaj ustawy..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-all text-sm"
-            />
-          </div>
-        </div>
+                />
+              </div>
+            </div>
 
-        {/* Bills List - Scrollable Container */}
+            {/* Bills List - Scrollable Container */}
         <div className="md:max-h-[500px] overflow-y-auto pr-1">
               <div className="space-y-3">
               {filteredBills.length > 0 ? (
@@ -515,7 +659,7 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
                   Nie znaleziono pasujących wyników
                 </div>
               )}
-        </div>
+              </div>
         </div>
       </div>
 
