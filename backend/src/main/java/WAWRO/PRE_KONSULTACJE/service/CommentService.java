@@ -36,7 +36,7 @@ public class CommentService {
         User author = userService.getLoggedUser();
         Comment comment = buildComment(author,consultationId);
         comment.setContent(createDTO.content());
-        //comment.setBlocked(!validateContent(createDTO.content()));
+        comment.setBlocked(!validateContent(createDTO.content()));
         Comment savedComment = commentRepository.save(comment);
         return commentMapper.toDto(savedComment);
     }

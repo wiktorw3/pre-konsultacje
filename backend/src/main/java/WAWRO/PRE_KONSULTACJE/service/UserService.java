@@ -8,6 +8,8 @@ import WAWRO.PRE_KONSULTACJE.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -31,6 +33,16 @@ public class UserService {
 
     //todo get user from token
     public User getLoggedUser() {
-        return userRepository.getByEmail("testowy@test.pl");
+        Optional<User> optionalUser = userRepository.getByEmail("testowy@test.pl");
+        return optionalUser.orElseGet(this::createUser);
+    }
+
+    private User createUser(){
+        User user = new User();
+        user.setFirstName("testowy");
+        user.setLastName("testowy");
+        user.setEmail("test@example.pl");
+        user.setRole(Role.IDENTIFIED_USER);
+        return userRepository.save(user);
     }
 }

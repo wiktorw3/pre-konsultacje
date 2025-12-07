@@ -108,15 +108,14 @@ class CommentServiceTest {
         when(preConsultationRepository.findByIdOrThrow(CONSULTATION_ID)).thenReturn(testConsultation);
         when(aiService.validateComment("Dobra treść")).thenReturn("OK");
 
-        when(commentRepository.save(any(Comment.class))).thenReturn(testComment);
-        when(commentMapper.toDto(any(Comment.class))).thenReturn(testCommentDTO);
-
+        lenient().when(commentRepository.save(any(Comment.class))).thenReturn(testComment);
+        lenient().when(commentMapper.toDto(any(Comment.class))).thenReturn(testCommentDTO);
         // WHEN
         commentService.createComment(CONSULTATION_ID, createDTO);
 
         // THEN
         verify(commentRepository).save(argThat(comment ->
-                comment.isBlocked() == false
+                !comment.isBlocked()
         ));
     }
 
