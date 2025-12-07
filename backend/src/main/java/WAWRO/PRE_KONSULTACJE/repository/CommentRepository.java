@@ -14,4 +14,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     }
 
     List<Comment> findAllByPreConsultationIdAndBlockedFalse(Long preConsultationId);
+
+    List<Comment> findAllByBlockedTrueOrderByDateCreatedDesc();
 }

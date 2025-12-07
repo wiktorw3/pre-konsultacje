@@ -38,7 +38,6 @@ public class CommentController {
     public ResponseEntity<CommentDTO> toggleBlockStatus(@PathVariable Long consultationId,
                                                         @PathVariable Long commentId
     ) {
-
         CommentDTO updatedComment = commentService.toggleBlockStatus(commentId);
         return ResponseEntity.ok(updatedComment);
     }

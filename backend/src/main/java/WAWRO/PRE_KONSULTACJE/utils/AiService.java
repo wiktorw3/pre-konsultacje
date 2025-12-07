@@ -2,13 +2,11 @@ package WAWRO.PRE_KONSULTACJE.utils;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+@Component
 public class AiService {
 
     private final WebClient webClient;
@@ -18,7 +16,7 @@ public class AiService {
                 .baseUrl(baseUrl)
                 .build();
     }
-    public Set<Long> validateComment(String comment) {
+    public String validateComment(String comment) {
 
         try {
             return webClient.post()
@@ -26,13 +24,13 @@ public class AiService {
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(comment))
                     .retrieve()
-                    .bodyToFlux(Long.class)
-                    .collect(Collectors.toSet())
+                    .bodyToMono(String.class)
                     .block();
 
         } catch (Exception e) {
             System.err.println("Error communicating with AI-service: " + e.getMessage());
-            return Collections.emptySet();
+
+            return "ERROR: Validation failed.";
         }
     }
 }

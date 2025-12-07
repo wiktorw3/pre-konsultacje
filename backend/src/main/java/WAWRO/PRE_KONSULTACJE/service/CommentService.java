@@ -1,6 +1,7 @@
 package WAWRO.PRE_KONSULTACJE.service;
 
 import WAWRO.PRE_KONSULTACJE.mapper.CommentMapper;
+import WAWRO.PRE_KONSULTACJE.model.dto.CommentCreateAnalogDTO;
 import WAWRO.PRE_KONSULTACJE.model.dto.CommentCreateDTO;
 import WAWRO.PRE_KONSULTACJE.model.dto.CommentDTO;
 import WAWRO.PRE_KONSULTACJE.model.entity.Comment;
@@ -8,6 +9,7 @@ import WAWRO.PRE_KONSULTACJE.model.entity.PreConsultation;
 import WAWRO.PRE_KONSULTACJE.model.entity.User;
 import WAWRO.PRE_KONSULTACJE.repository.CommentRepository;
 import WAWRO.PRE_KONSULTACJE.repository.PreConsultationRepository;
+import WAWRO.PRE_KONSULTACJE.utils.AiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,21 +27,49 @@ public class CommentService {
     private final PreConsultationRepository preConsultationRepository;
     private final CommentMapper commentMapper;
     private final UserService userService;
+    private final AiService aiService;
 
 
     @Transactional
     public CommentDTO createComment(Long consultationId, CommentCreateDTO createDTO) {
 
         User author = userService.getLoggedUser();
+        Comment comment = buildComment(author,consultationId);
+        comment.setContent(createDTO.content());
+        comment.setBlocked(!validateContent(createDTO.content()));
+        Comment savedComment = commentRepository.save(comment);
+        return commentMapper.toDto(savedComment);
+    }
+
+    @Transactional
+    public CommentDTO createComment(Long consultationId, CommentCreateAnalogDTO createDTO) {
+
+        User author = userService.createAnalogUser(createDTO.firstName(), createDTO.lastName());
+        Comment comment = buildComment(author,consultationId);
+        comment.setContent(createDTO.content());
+        comment.setBlocked(!validateContent(createDTO.content()));
+        Comment savedComment = commentRepository.save(comment);
+        return commentMapper.toDto(savedComment);
+    }
+
+    private Comment buildComment (User author, Long consultationId) {
         PreConsultation consultation = preConsultationRepository.findByIdOrThrow(consultationId);
 
         Comment comment = new Comment();
-        comment.setContent(createDTO.content());
         comment.setAuthor(author);
         comment.setPreConsultation(consultation);
         comment.setDateCreated(LocalDateTime.now());
-        comment.setBlocked(false);
+        return comment;
+    }
 
+    private boolean validateContent(String content) {
+        return aiService.validateComment(content).equals("OK");
+    }
+
+    @Transactional
+    public CommentDTO unblockComment(Long commentId) {
+        Comment comment = commentRepository.findByIdOrThrow(commentId);
+        comment.setBlocked(false);
         Comment savedComment = commentRepository.save(comment);
         return commentMapper.toDto(savedComment);
     }
@@ -47,6 +77,13 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentDTO> getActiveCommentsByConsultationId(Long consultationId) {
         return commentRepository.findAllByPreConsultationIdAndBlockedFalse(consultationId).stream()
+                .map(commentMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CommentDTO> getAllBlockedCommentsSorted() {
+        return commentRepository.findAllByBlockedTrueOrderByDateCreatedDesc().stream()
                 .map(commentMapper::toDto)
                 .collect(Collectors.toList());
     }
