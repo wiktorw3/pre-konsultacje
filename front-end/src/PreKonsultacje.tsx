@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Bill, BillStatus, Consultation } from './types'
 import mPrawoLogo from './assets/mPrawo-logo3.png'
 import Timeline, { exampleTimelineData } from './Timeline'
@@ -340,6 +340,74 @@ const BillTrain = ({ status }: { status: BillStatus }) => {
 export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBillClick, onConsultationClick }: LandingPageProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [consultationType, setConsultationType] = useState<'Prekonsultacje' | 'Konsultacje'>('Prekonsultacje')
+  
+  // Likes state - load from localStorage
+  const [likedPreConsultations, setLikedPreConsultations] = useState<Set<number>>(new Set())
+  const [likeCounts, setLikeCounts] = useState<Record<number, number>>({})
+  
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('liked-pre-consultations')
+      if (stored) {
+        const likedIds = JSON.parse(stored) as number[]
+        setLikedPreConsultations(new Set(likedIds))
+      }
+      
+      // Load like counts
+      const storedCounts = localStorage.getItem('pre-consultation-like-counts')
+      if (storedCounts) {
+        setLikeCounts(JSON.parse(storedCounts))
+      } else {
+        // Initialize with default counts (0) for all pre-consultations
+        const initialCounts: Record<number, number> = {}
+        preConsultations.forEach(consultation => {
+          initialCounts[consultation.id] = 0
+        })
+        setLikeCounts(initialCounts)
+        localStorage.setItem('pre-consultation-like-counts', JSON.stringify(initialCounts))
+      }
+    } catch (error) {
+      console.warn('Failed to load liked pre-consultations:', error)
+    }
+  }, [])
+  
+  const toggleLike = (consultationId: number, e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent opening consultation details
+    
+    if (!isLoggedIn) {
+      return // Don't allow liking if not logged in
+    }
+    
+    // Sprawdź aktualny stan z localStorage (źródło prawdy) - zapobiega podwójnemu kliknięciu
+    try {
+      const stored = localStorage.getItem('liked-pre-consultations')
+      const likedIds = stored ? (JSON.parse(stored) as number[]) : []
+      const wasLiked = likedIds.includes(consultationId)
+      const newIsLiked = !wasLiked
+      
+      // Update liked list in localStorage
+      const newLikedIds = newIsLiked 
+        ? [...likedIds.filter(id => id !== consultationId), consultationId] // Usuń duplikaty i dodaj
+        : likedIds.filter(id => id !== consultationId)
+      localStorage.setItem('liked-pre-consultations', JSON.stringify(Array.from(new Set(newLikedIds))))
+      
+      // Update like count - sprawdzamy STARY stan (wasLiked)
+      const storedCounts = localStorage.getItem('pre-consultation-like-counts')
+      const counts = storedCounts ? (JSON.parse(storedCounts) as Record<number, number>) : {}
+      const currentCount = counts[consultationId] || 0
+      const newCount = currentCount + (wasLiked ? -1 : 1)
+      const finalCount = Math.max(0, newCount)
+      
+      counts[consultationId] = finalCount
+      localStorage.setItem('pre-consultation-like-counts', JSON.stringify(counts))
+      
+      // Update state
+      setLikedPreConsultations(new Set(newLikedIds))
+      setLikeCounts({ ...counts })
+    } catch (error) {
+      console.warn('Failed to toggle like:', error)
+    }
+  }
 
   // Filter bills (only ustawy) based on search query
   const filteredBills = bills.filter((bill) => {
@@ -429,25 +497,71 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
 
           {/* List - Horizontal Scroll on Mobile */}
           <div className="flex gap-3 overflow-x-auto pb-2">
-            {(consultationType === 'Prekonsultacje' ? preConsultations : consultations).map((item) => (
-              <div
-                key={item.id}
-                onClick={() => onConsultationClick(item)}
-                className="flex-shrink-0 w-64 bg-white rounded-xl p-4 hover:bg-gray-50 cursor-pointer transition-colors border border-gray-200 shadow-sm"
-              >
-                <h4 className="font-semibold text-gray-900 text-sm leading-snug">
-                  {item.title}
-                </h4>
-                <div className="mt-2 flex items-center gap-2 text-xs">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-900 text-white font-medium">
-                    {item.category}
-                  </span>
-                  <span className="text-gray-500 whitespace-nowrap">
-                    Do kiedy: <span className="font-bold text-gray-700">{item.deadline}</span>
-                  </span>
+            {(consultationType === 'Prekonsultacje' ? preConsultations : consultations).map((item) => {
+              const isLiked = consultationType === 'Prekonsultacje' && likedPreConsultations.has(item.id)
+              const likeCount = consultationType === 'Prekonsultacje' ? (likeCounts[item.id] || 0) : 0
+              
+              return (
+                <div
+                  key={item.id}
+                  className="flex-shrink-0 w-64 bg-white rounded-xl p-4 hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm relative"
+                >
+                  <div
+                    onClick={() => onConsultationClick(item)}
+                    className="cursor-pointer"
+                  >
+                    <h4 className="font-semibold text-gray-900 text-sm leading-snug">
+                      {item.title}
+                    </h4>
+                    <div className="mt-2 flex items-center gap-2 text-xs flex-wrap">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-900 text-white font-medium">
+                        {item.category}
+                      </span>
+                      <span className="text-gray-500 whitespace-nowrap">
+                        Do kiedy: <span className="font-bold text-gray-700">{item.deadline}</span>
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Like counter/button - zawsze widoczny, klikalny tylko dla zalogowanych */}
+                  {consultationType === 'Prekonsultacje' && (
+                    <div className="absolute bottom-3 right-3 z-10">
+                      {isLoggedIn ? (
+                        <button
+                          onClick={(e) => toggleLike(item.id, e)}
+                          className="inline-flex items-center gap-1 text-gray-600 bg-white/80 rounded-full px-2 py-1 shadow-sm hover:bg-white transition-colors"
+                          aria-label={isLiked ? 'Usuń z ulubionych' : 'Dodaj do ulubionych'}
+                          type="button"
+                        >
+                          <svg 
+                            className={`w-4 h-4 transition-colors ${isLiked ? 'text-red-500 fill-current' : 'text-gray-400'}`}
+                            fill={isLiked ? 'currentColor' : 'none'}
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                          </svg>
+                          <span className="text-xs font-medium">{likeCount}</span>
+                        </button>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-gray-600 bg-white/80 rounded-full px-2 py-1 shadow-sm">
+                          <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                          <span className="text-xs font-medium">{likeCount}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
