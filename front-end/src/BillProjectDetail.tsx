@@ -76,7 +76,6 @@ export default function BillProjectDetail({ item, onBack }: BillProjectDetailPro
               <div className="flex items-start min-w-max">
                 {reversedSteps.map((step, index) => {
                   const isLastStep = index === reversedSteps.length - 1 // Current step (rightmost)
-                  const isCompleted = index < reversedSteps.length - 1 // Previous steps
                   
                   return (
                     <div key={index} className="flex items-start">

@@ -4,6 +4,7 @@ import LoginScreen from './LoginScreen'
 import BillProjectDetail from './BillProjectDetail'
 import ConsultationDetail from './ConsultationDetail'
 import { Bill, Consultation } from './types'
+import { AccessibilityWidget } from './accessibility/AccessibilityWidget'
 
 type ViewType = 'landing' | 'login' | 'detail' | 'consultationDetail'
 
@@ -42,32 +43,29 @@ function App() {
     setCurrentView('consultationDetail')
   }
 
-  if (currentView === 'login') {
-    return <LoginScreen onBack={handleBack} onLoginSuccess={handleLoginSuccess} />
-  }
-
-  if (currentView === 'detail' && selectedBill) {
-    return <BillProjectDetail item={selectedBill} onBack={handleBack} />
-  }
-
-  if (currentView === 'consultationDetail' && selectedConsultation) {
-    return (
-      <ConsultationDetail 
-        item={selectedConsultation} 
-        isLoggedIn={isLoggedIn}
-        onBack={handleBack} 
-      />
-    )
-  }
-
   return (
-    <LandingPage
-      isLoggedIn={isLoggedIn}
-      onLoginClick={handleLoginClick}
-      onLogout={handleLogout}
-      onBillClick={handleBillClick}
-      onConsultationClick={handleConsultationClick}
-    />
+    <>
+      {currentView === 'login' ? (
+        <LoginScreen onBack={handleBack} onLoginSuccess={handleLoginSuccess} />
+      ) : currentView === 'detail' && selectedBill ? (
+        <BillProjectDetail item={selectedBill} onBack={handleBack} />
+      ) : currentView === 'consultationDetail' && selectedConsultation ? (
+        <ConsultationDetail 
+          item={selectedConsultation} 
+          isLoggedIn={isLoggedIn}
+          onBack={handleBack} 
+        />
+      ) : (
+        <LandingPage
+          isLoggedIn={isLoggedIn}
+          onLoginClick={handleLoginClick}
+          onLogout={handleLogout}
+          onBillClick={handleBillClick}
+          onConsultationClick={handleConsultationClick}
+        />
+      )}
+      <AccessibilityWidget />
+    </>
   )
 }
 
