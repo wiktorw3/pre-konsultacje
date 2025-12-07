@@ -504,7 +504,7 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
               return (
                 <div
                   key={item.id}
-                  className="flex-shrink-0 w-64 bg-white rounded-xl p-4 hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm relative"
+                  className="flex-shrink-0 w-64 bg-white rounded-xl p-4 hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm"
                 >
                   <div
                     onClick={() => onConsultationClick(item)}
@@ -513,7 +513,7 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
                     <h4 className="font-semibold text-gray-900 text-sm leading-snug">
                       {item.title}
                     </h4>
-                    <div className="mt-2 flex items-center gap-2 text-xs flex-wrap">
+                    <div className="mt-2 flex items-center gap-2 text-xs">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-900 text-white font-medium">
                         {item.category}
                       </span>
@@ -523,9 +523,9 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
                     </div>
                   </div>
                   
-                  {/* Like counter/button - zawsze widoczny, klikalny tylko dla zalogowanych */}
+                  {/* Like counter/button - zawsze widoczny, klikalny tylko dla zalogowanych, poniżej po prawej */}
                   {consultationType === 'Prekonsultacje' && (
-                    <div className="absolute bottom-3 right-3 z-10">
+                    <div className="mt-2 flex justify-end">
                       {isLoggedIn ? (
                         <button
                           onClick={(e) => toggleLike(item.id, e)}
