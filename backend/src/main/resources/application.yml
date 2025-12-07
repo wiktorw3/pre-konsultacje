@@ -19,11 +19,11 @@ spring:
       mode: always
 server:
   port: 8080
-  servlet:
-    context-path: /api
-logging:
-  level:
-    org.springframework.jdbc.datasource.init: DEBUG
+level:
+  org.springdoc: DEBUG
+  springfox: DEBUG
+  org.springframework.web: DEBUG
+  org.springframework.boot: DEBUG
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
