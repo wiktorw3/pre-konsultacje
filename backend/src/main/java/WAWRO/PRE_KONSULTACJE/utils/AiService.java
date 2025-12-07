@@ -20,7 +20,7 @@ public class AiService {
 
         try {
             return webClient.post()
-                    .uri("/validate/comment")
+                    .uri("/moderate")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(comment))
                     .retrieve()

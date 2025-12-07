@@ -28,7 +28,7 @@ springdoc:
   api-docs:
     path: /api-docs
 ai-service:
-  url:
+  url: http://localhost:8080/
 app:
   cors:
     allowed-origins:
