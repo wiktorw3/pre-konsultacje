@@ -138,30 +138,90 @@ export default function BillProjectDetail({ item, onBack }: BillProjectDetailPro
         </section>
 
         {/* Cele, Założenia, Skutki - Horizontal Row */}
-        <section>
+        <section className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Cele */}
             <div className="bg-white/60 rounded-xl p-5">
-              <h3 className="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
                 Cele
               </h3>
-              <p className="text-gray-700 text-sm leading-relaxed">{item.goals}</p>
+              <ul className="space-y-2">
+                {item.goals.map((goal, index) => (
+                  <li key={index} className="flex items-start gap-2 text-gray-700 text-sm">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <span>{goal}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
             
             {/* Założenia */}
             <div className="bg-white/60 rounded-xl p-5">
-              <h3 className="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
                 Założenia
               </h3>
-              <p className="text-gray-700 text-sm leading-relaxed">{item.assumptions}</p>
+              <ul className="space-y-2">
+                {item.assumptions.map((assumption, index) => (
+                  <li key={index} className="flex items-start gap-2 text-gray-700 text-sm">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <span>{assumption}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
             
             {/* Skutki */}
             <div className="bg-white/60 rounded-xl p-5">
-              <h3 className="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide">
                 Skutki
               </h3>
-              <p className="text-gray-700 text-sm leading-relaxed">{item.impacts}</p>
+              <ul className="space-y-2">
+                {item.impacts.map((impact, index) => (
+                  <li key={index} className="flex items-start gap-2 text-gray-700 text-sm">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <span>{impact}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Zwolennicy i Przeciwnicy */}
+        <section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Zwolennicy */}
+            <div className="bg-white/60 rounded-xl p-5">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide flex items-center gap-2">
+                <span className="text-green-500">👍</span> Zwolennicy
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {item.zwolennicy.map((zwolennik, index) => (
+                  <span 
+                    key={index} 
+                    className="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium"
+                  >
+                    {zwolennik}
+                  </span>
+                ))}
+              </div>
+            </div>
+            
+            {/* Przeciwnicy */}
+            <div className="bg-white/60 rounded-xl p-5">
+              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wide flex items-center gap-2">
+                <span className="text-red-500">👎</span> Przeciwnicy
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {item.przeciwnicy.map((przeciwnik, index) => (
+                  <span 
+                    key={index} 
+                    className="inline-flex items-center px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-medium"
+                  >
+                    {przeciwnik}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
