@@ -36,7 +36,7 @@ public class CommentService {
         User author = userService.getLoggedUser();
         Comment comment = buildComment(author,consultationId);
         comment.setContent(createDTO.content());
-        comment.setBlocked(!validateContent(createDTO.content()));
+        //comment.setBlocked(!validateContent(createDTO.content()));
         Comment savedComment = commentRepository.save(comment);
         return commentMapper.toDto(savedComment);
     }
@@ -47,7 +47,8 @@ public class CommentService {
         User author = userService.createAnalogUser(createDTO.firstName(), createDTO.lastName());
         Comment comment = buildComment(author,consultationId);
         comment.setContent(createDTO.content());
-        comment.setBlocked(!validateContent(createDTO.content()));
+        //todo uncoment when ai service works
+        //comment.setBlocked(!validateContent(createDTO.content()));
         Comment savedComment = commentRepository.save(comment);
         return commentMapper.toDto(savedComment);
     }
@@ -110,4 +111,5 @@ public class CommentService {
         commentRepository.save(comment);
         return commentMapper.toDto(comment);
     }
+
 }
