@@ -433,13 +433,13 @@ export default function LandingPage({ isLoggedIn, onLoginClick, onLogout, onBill
               <div
                 key={item.id}
                 onClick={() => onConsultationClick(item)}
-                className="flex-shrink-0 w-64 bg-gray-50 rounded-xl p-4 hover:bg-gray-100 cursor-pointer transition-colors border border-gray-200"
+                className="flex-shrink-0 w-64 bg-white rounded-xl p-4 hover:bg-gray-50 cursor-pointer transition-colors border border-gray-200 shadow-sm"
               >
                 <h4 className="font-semibold text-gray-900 text-sm leading-snug">
                   {item.title}
                 </h4>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-200 text-gray-700 font-medium">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-900 text-white font-medium">
                     {item.category}
                   </span>
                   <span className="text-gray-500">
